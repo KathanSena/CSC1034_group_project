@@ -1,0 +1,72 @@
++-------------------+
+|    FoodBank       |
+|-------------------|
+| PK foodbank_id    |
+| name              |
+| region            |
++-------------------+
+        |
+        | 1
+        |------< receives >------ 
+        |                         N
++-------------------+        +----------------------+
+|     Donation      |        |       Stock          |
+|-------------------|        |----------------------|
+| PK donation_id    |        | PK stock_id          |
+| FK foodbank_id    |        | FK foodbank_id       |
+| donation_date     |        | FK item_id           |
++-------------------+        | quantity             |
+        |                    +----------------------+
+        |
+        | 1
+        |------< contains >------ 
+        |                         N
++-------------------+
+|   DonationItem    |
+|-------------------|
+| FK donation_id    |
+| FK item_id        |
+| quantity          |
++-------------------+
+        |
+        |
+        N
++-------------------+
+|     FoodItem      |
+|-------------------|
+| PK item_id        |
+| name              |
+| category          |
++-------------------+
+        |
+        | 1
+        |------< used in >------
+        |                        N
++-------------------+
+| DistributionItem  |
+|-------------------|
+| FK distribution_id|
+| FK item_id        |
+| quantity          |
++-------------------+
+        |
+        |
+        N
++-------------------+
+|   Distribution    |
+|-------------------|
+| PK distribution_id|
+| FK foodbank_id    |
+| FK household_id   |
+| distribution_date |
++-------------------+
+        |
+        |
+        N
++-------------------+
+|     Household     |
+|-------------------|
+| PK household_id   |
+| household_size    |
+| postcode          |
++-------------------+
