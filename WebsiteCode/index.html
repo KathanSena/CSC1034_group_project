@@ -3,121 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Table Belfast</title>
+    <title>Barton's Foodbank</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header class="site-header">
-        <div class="container">
-            <div class="brand">
-                <h1>Open Table Belfast</h1>
-                <p>Local food support for households across Belfast</p>
-            </div>
-            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">
-                Menu
-            </button>
-            <nav id="main-nav" class="main-nav">
-                <a href="#about">About</a>
-                <a href="#services">Services</a>
-                <a href="#impact">Impact</a>
-                <a href="#contact">Contact</a>
+    <header class="navbar">
+        <div class="container nav-inner">
+            <a class="brand" href="index.html">Barton's Foodbank</a>
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="index.html">Home</a>
+                <a href="stock.html">Stock Data</a>
             </nav>
         </div>
     </header>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <div class="hero-copy">
-                    <p class="tag">SDG 2: Zero Hunger</p>
-                    <h2>Supporting families with reliable access to food.</h2>
-                    <p>
-                        Open Table Belfast is a community charity that helps people access pantry packs,
-                        fresh food, and local collection points when money is tight.
-                    </p>
-                    <div class="hero-actions">
-                        <a class="button primary" href="#contact">Get support</a>
-                        <a class="button" href="#services">Learn more</a>
-                    </div>
-                </div>
-                <div class="hero-panel">
-                    <h3>This week</h3>
-                    <ul>
-                        <li>3 local collection points open</li>
-                        <li>Emergency referrals available</li>
-                        <li>Fresh stock delivered on Friday</li>
-                    </ul>
-                </div>
+    <main class="container page-content">
+        <section class="panel hero-panel">
+            <p class="eyebrow">Food Bank Data System</p>
+            <h1>Basic dashboard</h1>
+            <p>
+                This page gives a simple overview of the food bank database and quick access
+                to the stock information page.
+            </p>
+        </section>
+
+        <section class="panel">
+            <div class="section-header">
+                <h2>Data overview</h2>
+                <p>Based on the ERD you shared for the food bank system.</p>
+            </div>
+
+            <div class="summary-grid">
+                <article class="summary-card">
+                    <span class="summary-label">Main tables</span>
+                    <strong>8</strong>
+                    <p>FoodBank, Donation, DonationItem, Stock, FoodItem, Distribution, Household, DistributionItem</p>
+                </article>
+                <article class="summary-card">
+                    <span class="summary-label">Stock links</span>
+                    <strong>FoodBank + FoodItem</strong>
+                    <p>The stock table connects each food bank to each food item and stores quantity data.</p>
+                </article>
+                <article class="summary-card">
+                    <span class="summary-label">Purpose</span>
+                    <strong>Track inventory</strong>
+                    <p>Use stock records to see what items are available and when they were last updated.</p>
+                </article>
             </div>
         </section>
 
-        <section id="about" class="section">
-            <div class="container">
-                <h2>About the charity</h2>
-                <p>
-                    We work with local volunteers, schools, and community groups to distribute food
-                    support with dignity. Our aim is to make the process simple, local, and dependable.
-                </p>
+        <section class="panel" id="actions">
+            <div class="section-header">
+                <h2>Actions</h2>
+                <p>Choose one of the basic pages below.</p>
             </div>
-        </section>
 
-        <section id="services" class="section alt">
-            <div class="container">
-                <h2>What we provide</h2>
-                <div class="card-grid">
-                    <article class="card">
-                        <h3>Food parcels</h3>
-                        <p>Short-term support for households facing immediate hardship.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Pantry collections</h3>
-                        <p>Low-cost and free food collection points in local community spaces.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Referrals</h3>
-                        <p>Signposting to other support services when extra help is needed.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section id="impact" class="section">
-            <div class="container">
-                <h2>Current impact</h2>
-                <div class="stats">
-                    <div class="stat">
-                        <strong>18</strong>
-                        <span>community hubs</span>
-                    </div>
-                    <div class="stat">
-                        <strong>420</strong>
-                        <span>households supported weekly</span>
-                    </div>
-                    <div class="stat">
-                        <strong>32</strong>
-                        <span>active volunteers</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="section alt">
-            <div class="container">
-                <h2>Contact us</h2>
-                <p>If you need support or want to help, get in touch with the team.</p>
-                <ul class="contact-list">
-                    <li>Phone: 028 9031 4260</li>
-                    <li>Email: hello@opentablebelfast.org</li>
-                    <li>Address: Clifton Street, Belfast</li>
-                </ul>
+            <div class="button-bar" role="group" aria-label="Dashboard actions">
+                <a class="action-button primary" href="stock.html">View Stock Information</a>
+                <button class="action-button" type="button" disabled>View Food Banks</button>
+                <button class="action-button" type="button" disabled>View Donations</button>
+                <button class="action-button" type="button" disabled>View Distributions</button>
             </div>
         </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="footer">
         <div class="container">
-            <p>Open Table Belfast</p>
-            <p>&copy; <span id="year"></span> Community food support service</p>
+            <p>&copy; <span id="year"></span> Barton's Foodbank</p>
         </div>
     </footer>
 
