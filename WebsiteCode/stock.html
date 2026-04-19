@@ -3,140 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Information</title>
+    <title>Stock Management</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <header class="navbar">
-        <div class="container nav-inner">
-            <a class="brand" href="index.html">Barton's Foodbank</a>
-            <nav class="nav-links" aria-label="Main navigation">
-                <a href="index.html">Home</a>
-                <a href="stock.html">Stock Data</a>
+<body data-page="stock">
+    <header class="site-header">
+        <div class="container nav-bar">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">FB</span>
+                <span>
+                    <strong>Food Bank Support System</strong>
+                    <small>SDG 2: Zero Hunger</small>
+                </span>
+            </a>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="index.html">Dashboard</a>
+                <a href="stock.html">Stock</a>
+                <a href="households.html">Households</a>
+                <a href="reports.html">Reports</a>
             </nav>
         </div>
     </header>
 
-    <main class="container page-content">
-        <section class="panel hero-panel">
-            <p class="eyebrow">Stock page</p>
-            <h1>Stock information</h1>
+    <main class="container page-shell">
+        <section class="page-intro">
+            <p class="eyebrow">Live reporting</p>
+            <h1>Stock records</h1>
             <p>
-                This page keeps the original clean design, but the code follows the same pattern as
-                your example file by using a shared <code>runQuery()</code> helper and
-                <code>dbConnector.php</code>.
+                Use the filters below to search the stock table. The report updates on the page
+                without needing a full refresh.
             </p>
         </section>
 
         <section class="panel">
-            <div class="section-header">
-                <h2>Current stock records</h2>
-                <p>Joined data from FoodBank, FoodItem, and Stock.</p>
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Filter records</p>
+                    <h2>Search stock</h2>
+                </div>
             </div>
 
-            <div id="output" class="table-wrap">
+            <form id="stockFilterForm" class="filter-grid">
+                <div class="form-group">
+                    <label for="foodBankFilter">Food bank</label>
+                    <select id="foodBankFilter" name="foodBankFilter">
+                        <option value="">All food banks</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoryFilter">Category</label>
+                    <select id="categoryFilter" name="categoryFilter">
+                        <option value="">All categories</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="stockSearch">Item search</label>
+                    <input id="stockSearch" name="stockSearch" type="text" placeholder="e.g. pasta">
+                </div>
+
+                <div class="form-group">
+                    <label for="maxRows">Maximum rows</label>
+                    <input id="maxRows" name="maxRows" type="number" value="50" min="5" max="200">
+                </div>
+
+                <div class="form-actions form-actions-wide">
+                    <button class="button button-primary" type="submit">Apply filters</button>
+                    <button class="button" id="clearStockFiltersBtn" type="button">Clear filters</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Summary</p>
+                    <h2>Filtered results overview</h2>
+                </div>
+            </div>
+
+            <div class="stats-grid compact-stats">
+                <article class="stat-card">
+                    <span class="stat-label">Visible rows</span>
+                    <strong id="visibleStockRows">--</strong>
+                    <p>Rows currently displayed in the table.</p>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Low stock rows</span>
+                    <strong id="visibleLowStockRows">--</strong>
+                    <p>Filtered rows at or below 75 units.</p>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Total quantity</span>
+                    <strong id="visibleStockQuantity">--</strong>
+                    <p>Total quantity across the filtered stock records.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Table report</p>
+                    <h2>Current stock data</h2>
+                </div>
+                <p class="section-text">Low stock rows are highlighted for quick scanning.</p>
+            </div>
+
+            <div id="stockOutput" class="table-shell">
                 <p class="status-message">Loading stock data...</p>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; <span id="year"></span> Barton's Foodbank</p>
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; <span id="year"></span> Food Bank Support System</p>
+            <p>Stock page</p>
         </div>
     </footer>
 
     <script src="script.js"></script>
     <script src="js/myJs.js"></script>
-    <script>
-        const printTable = async () => {
-            const output = document.querySelector("#output");
-
-            output.innerHTML = '<p class="status-message">Loading stock data...</p>';
-
-            const sql = `
-                SELECT
-                    s.stock_id,
-                    f.foodbank_name,
-                    i.item_name,
-                    i.category,
-                    s.quantity_in_stock,
-                    s.last_updated
-                FROM Stock s
-                JOIN FoodBank f ON s.foodbank_id = f.foodbank_id
-                JOIN FoodItem i ON s.item_id = i.item_id
-                ORDER BY s.stock_id;
-            `;
-
-            const result = await runQuery(sql);
-
-            if (!result || result.success !== true) {
-                const message = result && result.message
-                    ? result.message
-                    : "Unable to load stock data.";
-
-                output.innerHTML = `<p class="status-message error-message">${message}</p>`;
-                return;
-            }
-
-            if (result.data.length === 0) {
-                output.innerHTML = '<p class="status-message">No stock records returned.</p>';
-                return;
-            }
-
-            const rows = result.data;
-            const table = document.createElement("table");
-            const headerRow = document.createElement("tr");
-
-            const headings = [
-                "Stock ID",
-                "Food Bank",
-                "Item",
-                "Category",
-                "Quantity in Stock",
-                "Last Updated"
-            ];
-
-            for (let heading of headings) {
-                const th = document.createElement("th");
-                th.textContent = heading;
-                headerRow.appendChild(th);
-            }
-
-            table.appendChild(headerRow);
-
-            for (let row of rows) {
-                const tr = document.createElement("tr");
-
-                const tdStockId = document.createElement("td");
-                const tdFoodBank = document.createElement("td");
-                const tdItem = document.createElement("td");
-                const tdCategory = document.createElement("td");
-                const tdQuantity = document.createElement("td");
-                const tdLastUpdated = document.createElement("td");
-
-                tdStockId.textContent = row.stock_id;
-                tdFoodBank.textContent = row.foodbank_name;
-                tdItem.textContent = row.item_name;
-                tdCategory.textContent = row.category;
-                tdQuantity.textContent = row.quantity_in_stock;
-                tdLastUpdated.textContent = row.last_updated;
-
-                tr.appendChild(tdStockId);
-                tr.appendChild(tdFoodBank);
-                tr.appendChild(tdItem);
-                tr.appendChild(tdCategory);
-                tr.appendChild(tdQuantity);
-                tr.appendChild(tdLastUpdated);
-
-                table.appendChild(tr);
-            }
-
-            output.innerHTML = "";
-            output.appendChild(table);
-        };
-
-        document.addEventListener("DOMContentLoaded", printTable);
-    </script>
+    <script src="js/stockPage.js"></script>
 </body>
 </html>

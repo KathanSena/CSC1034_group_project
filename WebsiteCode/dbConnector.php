@@ -1,59 +1,56 @@
 <?php
-header("Content-Type: application/json; charset=UTF-8");
+header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
-$dbHost = "127.0.0.1";
-$dbName = "CSC1034_2526_018";
-$dbUser = "jbarton09";
-$dbPass = "5sMpc0QKlDQMHXVC";
-
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    http_response_code(405);
-    echo json_encode([
-        "success" => false,
-        "message" => "Only POST requests are allowed."
-    ]);
+function handle_error($error_message) {
+    $response = ["error" => $error_message];
+    echo json_encode($response, JSON_PRETTY_PRINT);
     exit;
 }
 
-$query = trim($_POST["query"] ?? "");
+set_exception_handler(function($exception) {
+    handle_error("Error: " . $exception->getMessage());
+});
 
-if ($query === "") {
-    http_response_code(400);
-    echo json_encode([
-        "success" => false,
-        "message" => "No SQL query was provided."
-    ]);
+if (!isset($_POST['query'])) {
+    $response = ["error" => "Missing required POST parameters"];
+    echo json_encode($response);
     exit;
 }
 
-if (!preg_match("/^SELECT\\s/i", $query)) {
-    http_response_code(400);
-    echo json_encode([
-        "success" => false,
-        "message" => "Only SELECT queries are allowed."
-    ]);
-    exit;
+$hostname = "localhost";
+$username = "jbarton09";
+$password = "5sMpc0QKlDQMHXVC";
+$database = "CSC1034_2526_018";
+
+$query = $_POST['query'];
+
+$conn = new mysqli($hostname, $username, $password, $database);
+
+if ($conn->connect_error) {
+    handle_error("Connection failed: " . $conn->connect_error);
 }
 
-try {
-    $pdo = new PDO(
-        "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4",
-        $dbUser,
-        $dbPass
-    );
+if ($result = $conn->query($query)) {
+    if (strpos(strtoupper($query), 'SELECT') === 0) {
+        $data = [];
 
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $statement = $pdo->query($query);
-    $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
 
-    echo json_encode([
-        "success" => true,
-        "data" => $rows
-    ]);
-} catch (PDOException $error) {
-    http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Database error: " . $error->getMessage()
-    ]);
+        $response = ["success" => true, "data" => $data];
+        echo json_encode($response, JSON_PRETTY_PRINT);
+        $result->free();
+    } else {
+        $response = ["success" => true, "affected_rows" => $conn->affected_rows];
+        echo json_encode($response, JSON_PRETTY_PRINT);
+    }
+} else {
+    handle_error("Query failed: " . $conn->error);
 }
+
+$conn->close();
+?>

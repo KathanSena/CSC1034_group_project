@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="households">
+    <header class="site-header">
+        <div class="container nav-bar">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">FB</span>
+                <span>
+                    <strong>Food Bank Support System</strong>
+                    <small>SDG 2: Zero Hunger</small>
+                </span>
+            </a>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="index.html">Dashboard</a>
+                <a href="stock.html">Stock</a>
+                <a href="households.html">Households</a>
+                <a href="reports.html">Reports</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-shell">
+        <section class="page-intro">
+            <p class="eyebrow">CRUD management</p>
+            <h1>Household records</h1>
+            <p>
+                This page is used to add, edit, and delete household records. The form includes
+                validation, success messages, and a confirmation step before deleting a record.
+            </p>
+        </section>
+
+        <section class="two-column-layout">
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Form</p>
+                        <h2 id="householdFormTitle">Add a household</h2>
+                    </div>
+                </div>
+
+                <form id="householdForm" class="form-grid" novalidate>
+                    <div class="form-group">
+                        <label for="householdSize">Household size</label>
+                        <input id="householdSize" name="householdSize" type="number" min="1" max="20" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="postcode">Postcode</label>
+                        <input id="postcode" name="postcode" type="text" maxlength="20" required>
+                        <small>Enter a short postcode value such as BT1 5GS.</small>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="referralSource">Referral source</label>
+                        <input id="referralSource" name="referralSource" type="text" maxlength="100" required>
+                        <small>For example: Social Services, Charity Referral, NGO, or Self Referral.</small>
+                    </div>
+
+                    <div class="form-actions form-actions-wide">
+                        <button id="saveHouseholdBtn" class="button button-primary" type="submit">Save household</button>
+                        <button id="resetHouseholdBtn" class="button" type="button">Clear form</button>
+                    </div>
+
+                    <p id="householdMessage" class="inline-message" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Data rules</p>
+                        <h2>Validation checks</h2>
+                    </div>
+                </div>
+
+                <ul class="feature-list">
+                    <li>Household size, postcode, and referral source must all be completed.</li>
+                    <li>Household size must be a number between 1 and 20.</li>
+                    <li>Postcode must be between 5 and 20 characters after trimming spaces.</li>
+                    <li>The submit button is disabled while a save is in progress.</li>
+                    <li>Delete actions show a confirmation dialogue before the SQL runs.</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Current data</p>
+                    <h2>Existing households</h2>
+                </div>
+            </div>
+
+            <div id="householdTable" class="table-shell">
+                <p class="status-message">Loading households...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; <span id="year"></span> Food Bank Support System</p>
+            <p>Household management page</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="js/myJs.js"></script>
+    <script src="js/households.js"></script>
+</body>
+</html>

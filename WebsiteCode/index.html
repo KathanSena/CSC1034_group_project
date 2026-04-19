@@ -3,76 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barton's Foodbank</title>
+    <title>Food Bank Support System</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <header class="navbar">
-        <div class="container nav-inner">
-            <a class="brand" href="index.html">Barton's Foodbank</a>
-            <nav class="nav-links" aria-label="Main navigation">
-                <a href="index.html">Home</a>
-                <a href="stock.html">Stock Data</a>
+<body data-page="dashboard">
+    <header class="site-header">
+        <div class="container nav-bar">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">FB</span>
+                <span>
+                    <strong>Food Bank Support System</strong>
+                    <small>SDG 2: Zero Hunger</small>
+                </span>
+            </a>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="index.html">Dashboard</a>
+                <a href="stock.html">Stock</a>
+                <a href="households.html">Households</a>
+                <a href="reports.html">Reports</a>
             </nav>
         </div>
     </header>
 
-    <main class="container page-content">
-        <section class="panel hero-panel">
-            <p class="eyebrow">Food Bank Data System</p>
-            <h1>Basic dashboard</h1>
-            <p>
-                This page gives a simple overview of the food bank database and quick access
-                to the stock information page.
-            </p>
+    <main class="container page-shell">
+        <section class="hero-card">
+            <div class="hero-copy">
+                <p class="eyebrow">Foodbank Distribution and Stock Management System</p>
+                <h1>Monitor stock, support households, and produce live reports.</h1>
+                <p class="hero-text">
+                    This website was built for the CSC1034 food bank project. It gives a simple
+                    way to view stock, manage household data, and check a few useful reports.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="button button-primary" href="households.html">Manage Households</a>
+                    <a class="button" href="reports.html">Open Reports</a>
+                </div>
+            </div>
+
+            <aside class="hero-panel">
+                <h2>Main features</h2>
+                <ul class="feature-list">
+                    <li>Live database counts and alerts on page load</li>
+                    <li>Create, update, and delete household records</li>
+                    <li>Tabular reporting with filters and no reloads</li>
+                    <li>Chart.js visual reporting from live SQL data</li>
+                </ul>
+            </aside>
         </section>
 
         <section class="panel">
-            <div class="section-header">
-                <h2>Data overview</h2>
-                <p>Based on the ERD you shared for the food bank system.</p>
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Dashboard</p>
+                    <h2>System overview</h2>
+                </div>
+                <p class="section-text">The summary cards below load directly from the database.</p>
             </div>
 
-            <div class="summary-grid">
-                <article class="summary-card">
-                    <span class="summary-label">Main tables</span>
-                    <strong>8</strong>
-                    <p>FoodBank, Donation, DonationItem, Stock, FoodItem, Distribution, Household, DistributionItem</p>
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <span class="stat-label">Food banks</span>
+                    <strong id="foodBankCount">--</strong>
+                    <p>Registered organisations in the system.</p>
                 </article>
-                <article class="summary-card">
-                    <span class="summary-label">Stock links</span>
-                    <strong>FoodBank + FoodItem</strong>
-                    <p>The stock table connects each food bank to each food item and stores quantity data.</p>
+                <article class="stat-card">
+                    <span class="stat-label">Donations</span>
+                    <strong id="donationCount">--</strong>
+                    <p>Donation records currently stored in the database.</p>
                 </article>
-                <article class="summary-card">
-                    <span class="summary-label">Purpose</span>
-                    <strong>Track inventory</strong>
-                    <p>Use stock records to see what items are available and when they were last updated.</p>
+                <article class="stat-card">
+                    <span class="stat-label">Households</span>
+                    <strong id="householdCount">--</strong>
+                    <p>Clients currently recorded for support.</p>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Low stock items</span>
+                    <strong id="lowStockCount">--</strong>
+                    <p>Records at or below the dashboard alert threshold.</p>
                 </article>
             </div>
         </section>
 
-        <section class="panel" id="actions">
-            <div class="section-header">
-                <h2>Actions</h2>
-                <p>Choose one of the basic pages below.</p>
-            </div>
+        <section class="content-grid">
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Priority attention</p>
+                        <h2>Low stock alert</h2>
+                    </div>
+                    <a class="text-link" href="stock.html">Open stock page</a>
+                </div>
 
-            <div class="button-bar" role="group" aria-label="Dashboard actions">
-                <a class="action-button primary" href="stock.html">View Stock Information</a>
-                <button class="action-button" type="button" disabled>View Food Banks</button>
-                <button class="action-button" type="button" disabled>View Donations</button>
-                <button class="action-button" type="button" disabled>View Distributions</button>
-            </div>
+                <div id="lowStockTable" class="table-shell">
+                    <p class="status-message">Loading low stock items...</p>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Service activity</p>
+                        <h2>Distributions by food bank</h2>
+                    </div>
+                    <a class="text-link" href="reports.html">Open reports</a>
+                </div>
+
+                <div id="householdSummaryTable" class="table-shell">
+                    <p class="status-message">Loading distribution summary...</p>
+                </div>
+            </section>
         </section>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; <span id="year"></span> Barton's Foodbank</p>
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; <span id="year"></span> Food Bank Support System</p>
+            <p>CSC1034 group project website</p>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script src="js/myJs.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
