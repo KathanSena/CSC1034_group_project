@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="reports">
-    <header class="site-header">
-        <div class="container nav-bar">
-            <a class="brand" href="index.html">
-                <span class="brand-mark">FB</span>
+    <header class="main-header">
+        <div class="page-width header-inside">
+            <a class="logo-area" href="index.html">
+                <span class="logo-circle">FB</span>
                 <span>
-                    <strong>Food Bank Support System</strong>
-                    <small>SDG 2: Zero Hunger</small>
+                    <strong>Group 18 Food Bank Project</strong>
+                    <small>CSC1034 | SDG 2 Zero Hunger</small>
                 </span>
             </a>
 
-            <nav class="main-nav" aria-label="Main navigation">
+            <nav class="header-nav" aria-label="Main navigation">
                 <a href="index.html">Dashboard</a>
                 <a href="stock.html">Stock</a>
                 <a href="households.html">Households</a>
@@ -26,80 +26,81 @@
         </div>
     </header>
 
-    <main class="container page-shell">
-        <section class="page-intro">
-            <p class="eyebrow">Parameterised reporting</p>
+    <main class="page-width data-display-main">
+        <section class="main-header-text smaller-header-box">
+            <p class="small-top-text">Parameterised reporting</p>
             <h1>Interactive stock report and live chart</h1>
             <p>
-                This page shows a parameterised stock report and a chart based on live data from
-                the database. Change the filter values and generate the report on the same page.
+                This page was built to meet the coursework requirement for a tabular report, a live
+                chart, and parameterised reporting. The results come from the database and update
+                on the same page.
             </p>
         </section>
 
-        <section class="panel">
-            <div class="section-heading">
+        <section class="data-box">
+            <div class="data-box-top">
                 <div>
-                    <p class="eyebrow">Filters</p>
+                    <p class="small-top-text">Filters</p>
                     <h2>Report settings</h2>
                 </div>
             </div>
 
-            <form id="reportFilterForm" class="filter-grid">
-                <div class="form-group">
+            <form id="reportFilterForm" class="filter-row">
+                <div class="input-group">
                     <label for="reportFoodBankFilter">Food bank</label>
                     <select id="reportFoodBankFilter" name="reportFoodBankFilter">
                         <option value="">All food banks</option>
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="input-group">
                     <label for="minimumQuantity">Low stock threshold</label>
                     <input id="minimumQuantity" name="minimumQuantity" type="number" min="1" max="100" value="20">
                 </div>
 
-                <div class="form-group">
+                <div class="input-group">
                     <label for="topLimit">Top categories</label>
                     <input id="topLimit" name="topLimit" type="number" min="3" max="12" value="6">
                 </div>
 
-                <div class="form-actions form-actions-wide">
-                    <button class="button button-primary" type="submit">Generate report</button>
+                <div class="button-row full-button-row">
+                    <button class="main-button green-button" type="submit">Generate report</button>
                 </div>
             </form>
         </section>
 
-        <section class="content-grid">
-            <section class="panel chart-panel">
-                <div class="section-heading">
+        <section class="data-box-row">
+            <section class="data-box chart-box">
+                <div class="data-box-top">
                     <div>
-                        <p class="eyebrow">Chart</p>
+                        <p class="small-top-text">Chart</p>
                         <h2>Stock quantity by category</h2>
                     </div>
                 </div>
 
-                <div class="chart-wrap">
+                <div class="chart-area">
                     <canvas id="stockChart" aria-label="Bar chart of stock quantity by category"></canvas>
                 </div>
             </section>
 
-            <section class="panel">
-                <div class="section-heading">
+            <section class="data-box">
+                <div class="data-box-top">
                     <div>
-                        <p class="eyebrow">Table</p>
+                        <p class="small-top-text">Table</p>
                         <h2>Low stock items</h2>
                     </div>
                 </div>
 
-                <div id="reportTableOutput" class="table-shell">
-                    <p class="status-message">Loading report data...</p>
+                <div id="reportTableOutput" class="table-box">
+                    <p class="loading-text">Loading report data...</p>
                 </div>
             </section>
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="container footer-inner">
-            <p>&copy; <span id="year"></span> Food Bank Support System</p>
+    <footer class="main-footer">
+        <div class="page-width main-footer-text">
+            <p>&copy; <span id="year"></span> Group 18 Food Bank Project</p>
             <p>Reports page</p>
         </div>
     </footer>

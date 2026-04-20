@@ -73,7 +73,7 @@ const printLowStockTable = async () => {
 
     for (let row of rows) {
         const tr = document.createElement("tr");
-        tr.className = "row-warning";
+        tr.className = "low-row";
 
         const tdFoodBank = document.createElement("td");
         const tdItem = document.createElement("td");

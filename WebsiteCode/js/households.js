@@ -3,13 +3,13 @@ let editingHouseholdId = null;
 const showMessage = (message, cssClass) => {
     const output = document.querySelector("#householdMessage");
     output.textContent = message;
-    output.className = `inline-message ${cssClass}`;
+    output.className = `message-box ${cssClass}`;
 };
 
 const clearMessage = () => {
     const output = document.querySelector("#householdMessage");
     output.textContent = "";
-    output.className = "inline-message";
+    output.className = "message-box";
 };
 
 const resetForm = () => {
@@ -95,7 +95,7 @@ const printHouseholds = async () => {
 
         const editButton = document.createElement("button");
         editButton.type = "button";
-        editButton.className = "button button-small";
+        editButton.className = "main-button grey-button small-button";
         editButton.textContent = "Edit";
         editButton.dataset.id = row.household_id;
         editButton.dataset.size = row.household_size;
@@ -104,7 +104,7 @@ const printHouseholds = async () => {
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
-        deleteButton.className = "button button-danger button-small";
+        deleteButton.className = "main-button red-button small-button";
         deleteButton.textContent = "Delete";
         deleteButton.dataset.id = row.household_id;
 
@@ -128,7 +128,7 @@ const saveHousehold = async () => {
     const validationMessage = validateForm();
 
     if (validationMessage !== "") {
-        showMessage(validationMessage, "is-error");
+        showMessage(validationMessage, "bad-message");
         return;
     }
 
@@ -161,14 +161,14 @@ const saveHousehold = async () => {
     saveButton.textContent = "Save household";
 
     if (!result || result.success !== true) {
-        showMessage("The household could not be saved.", "is-error");
+        showMessage("The household could not be saved.", "bad-message");
         return;
     }
 
     if (editingHouseholdId === null) {
-        showMessage("Household added successfully.", "is-success");
+        showMessage("Household added successfully.", "good-message");
     } else {
-        showMessage("Household updated successfully.", "is-success");
+        showMessage("Household updated successfully.", "good-message");
     }
 
     resetForm();
@@ -186,7 +186,7 @@ const deleteHousehold = async (householdId) => {
     const result = await runQuery(sql);
 
     if (!result || result.success !== true) {
-        showMessage("The household could not be deleted.", "is-error");
+        showMessage("The household could not be deleted.", "bad-message");
         return;
     }
 
@@ -194,7 +194,7 @@ const deleteHousehold = async (householdId) => {
         resetForm();
     }
 
-    showMessage("Household deleted successfully.", "is-success");
+    showMessage("Household deleted successfully.", "good-message");
     printHouseholds();
 };
 
@@ -218,7 +218,7 @@ document.querySelector("#householdTable").addEventListener("click", (event) => {
         document.querySelector("#householdSize").value = button.dataset.size;
         document.querySelector("#postcode").value = button.dataset.postcode;
         document.querySelector("#referralSource").value = button.dataset.referral;
-        showMessage("Edit mode enabled. Update the values and save again.", "is-success");
+        showMessage("Edit mode enabled. Update the values and save again.", "good-message");
     }
 
     if (button.textContent === "Delete") {

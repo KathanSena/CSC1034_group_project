@@ -138,7 +138,7 @@ const printTable = async () => {
         const tr = document.createElement("tr");
 
         if (Number(row.quantity_in_stock) <= 75) {
-            tr.className = "row-warning";
+            tr.className = "low-row";
         }
 
         const tdStockId = document.createElement("td");

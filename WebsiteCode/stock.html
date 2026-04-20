@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="stock">
-    <header class="site-header">
-        <div class="container nav-bar">
-            <a class="brand" href="index.html">
-                <span class="brand-mark">FB</span>
+    <header class="main-header">
+        <div class="page-width header-inside">
+            <a class="logo-area" href="index.html">
+                <span class="logo-circle">FB</span>
                 <span>
-                    <strong>Food Bank Support System</strong>
-                    <small>SDG 2: Zero Hunger</small>
+                    <strong>Group 18 Food Bank Project</strong>
+                    <small>CSC1034 | SDG 2 Zero Hunger</small>
                 </span>
             </a>
 
-            <nav class="main-nav" aria-label="Main navigation">
+            <nav class="header-nav" aria-label="Main navigation">
                 <a href="index.html">Dashboard</a>
                 <a href="stock.html">Stock</a>
                 <a href="households.html">Households</a>
@@ -26,101 +26,101 @@
         </div>
     </header>
 
-    <main class="container page-shell">
-        <section class="page-intro">
-            <p class="eyebrow">Live reporting</p>
+    <main class="page-width data-display-main">
+        <section class="main-header-text smaller-header-box">
+            <p class="small-top-text">Stock reporting</p>
             <h1>Stock records</h1>
             <p>
-                Use the filters below to search the stock table. The report updates on the page
-                without needing a full refresh.
+                This page was made for the reporting part of the coursework. It lets us filter the
+                stock table, see low stock items, and update the results without a full page reload.
             </p>
         </section>
 
-        <section class="panel">
-            <div class="section-heading">
+        <section class="data-box">
+            <div class="data-box-top">
                 <div>
-                    <p class="eyebrow">Filter records</p>
+                    <p class="small-top-text">Filter records</p>
                     <h2>Search stock</h2>
                 </div>
             </div>
 
-            <form id="stockFilterForm" class="filter-grid">
-                <div class="form-group">
+            <form id="stockFilterForm" class="filter-row">
+                <div class="input-group">
                     <label for="foodBankFilter">Food bank</label>
                     <select id="foodBankFilter" name="foodBankFilter">
                         <option value="">All food banks</option>
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="input-group">
                     <label for="categoryFilter">Category</label>
                     <select id="categoryFilter" name="categoryFilter">
                         <option value="">All categories</option>
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="input-group">
                     <label for="stockSearch">Item search</label>
                     <input id="stockSearch" name="stockSearch" type="text" placeholder="e.g. pasta">
                 </div>
 
-                <div class="form-group">
+                <div class="input-group">
                     <label for="maxRows">Maximum rows</label>
                     <input id="maxRows" name="maxRows" type="number" value="50" min="5" max="200">
                 </div>
 
-                <div class="form-actions form-actions-wide">
-                    <button class="button button-primary" type="submit">Apply filters</button>
-                    <button class="button" id="clearStockFiltersBtn" type="button">Clear filters</button>
+                <div class="button-row full-button-row">
+                    <button class="main-button green-button" type="submit">Apply filters</button>
+                    <button class="main-button grey-button" id="clearStockFiltersBtn" type="button">Clear filters</button>
                 </div>
             </form>
         </section>
 
-        <section class="panel">
-            <div class="section-heading">
+        <section class="data-box">
+            <div class="data-box-top">
                 <div>
-                    <p class="eyebrow">Summary</p>
+                    <p class="small-top-text">Summary</p>
                     <h2>Filtered results overview</h2>
                 </div>
             </div>
 
-            <div class="stats-grid compact-stats">
-                <article class="stat-card">
-                    <span class="stat-label">Visible rows</span>
+            <div class="stats-card-row small-stats-row">
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Visible rows</span>
                     <strong id="visibleStockRows">--</strong>
                     <p>Rows currently displayed in the table.</p>
                 </article>
-                <article class="stat-card">
-                    <span class="stat-label">Low stock rows</span>
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Low stock rows</span>
                     <strong id="visibleLowStockRows">--</strong>
                     <p>Filtered rows at or below 75 units.</p>
                 </article>
-                <article class="stat-card">
-                    <span class="stat-label">Total quantity</span>
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Total quantity</span>
                     <strong id="visibleStockQuantity">--</strong>
                     <p>Total quantity across the filtered stock records.</p>
                 </article>
             </div>
         </section>
 
-        <section class="panel">
-            <div class="section-heading">
+        <section class="data-box">
+            <div class="data-box-top">
                 <div>
-                    <p class="eyebrow">Table report</p>
+                    <p class="small-top-text">Table report</p>
                     <h2>Current stock data</h2>
                 </div>
-                <p class="section-text">Low stock rows are highlighted for quick scanning.</p>
+                <p class="box-info-text">Low stock rows are highlighted for quick scanning.</p>
             </div>
 
-            <div id="stockOutput" class="table-shell">
-                <p class="status-message">Loading stock data...</p>
+            <div id="stockOutput" class="table-box">
+                <p class="loading-text">Loading stock data...</p>
             </div>
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="container footer-inner">
-            <p>&copy; <span id="year"></span> Food Bank Support System</p>
+    <footer class="main-footer">
+        <div class="page-width main-footer-text">
+            <p>&copy; <span id="year"></span> Group 18 Food Bank Project</p>
             <p>Stock page</p>
         </div>
     </footer>

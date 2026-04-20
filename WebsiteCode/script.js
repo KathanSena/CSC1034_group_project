@@ -5,7 +5,7 @@ if (yearElement) {
 }
 
 const currentPage = document.body.dataset.page;
-const navLinks = document.querySelectorAll(".main-nav a");
+const navLinks = document.querySelectorAll(".header-nav a");
 
 for (const link of navLinks) {
     const linkPage = link.getAttribute("href").replace(".html", "");

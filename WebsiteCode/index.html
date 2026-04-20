@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="dashboard">
-    <header class="site-header">
-        <div class="container nav-bar">
-            <a class="brand" href="index.html">
-                <span class="brand-mark">FB</span>
+    <header class="main-header">
+        <div class="page-width header-inside">
+            <a class="logo-area" href="index.html">
+                <span class="logo-circle">FB</span>
                 <span>
-                    <strong>Food Bank Support System</strong>
-                    <small>SDG 2: Zero Hunger</small>
+                    <strong>Group 18 Food Bank Project</strong>
+                    <small>SDG 2 Zero Hunger</small>
                 </span>
             </a>
 
-            <nav class="main-nav" aria-label="Main navigation">
+            <nav class="header-nav" aria-label="Main navigation">
                 <a href="index.html">Dashboard</a>
                 <a href="stock.html">Stock</a>
                 <a href="households.html">Households</a>
@@ -26,101 +26,93 @@
         </div>
     </header>
 
-    <main class="container page-shell">
-        <section class="hero-card">
-            <div class="hero-copy">
-                <p class="eyebrow">Foodbank Distribution and Stock Management System</p>
-                <h1>Monitor stock, support households, and produce live reports.</h1>
-                <p class="hero-text">
-                    This website was built for the CSC1034 food bank project. It gives a simple
-                    way to view stock, manage household data, and check a few useful reports.
-                </p>
-
-                <div class="hero-actions">
-                    <a class="button button-primary" href="households.html">Manage Households</a>
-                    <a class="button" href="reports.html">Open Reports</a>
-                </div>
-            </div>
-
-            <aside class="hero-panel">
-                <h2>Main features</h2>
-                <ul class="feature-list">
-                    <li>Live database counts and alerts on page load</li>
-                    <li>Create, update, and delete household records</li>
-                    <li>Tabular reporting with filters and no reloads</li>
-                    <li>Chart.js visual reporting from live SQL data</li>
-                </ul>
-            </aside>
+    <main class="page-width data-display-main">
+        <section class="main-header-text">
+            <p class="small-top-text">CSC1034 Coursework</p>
+            <h1>Food bank database website for our group project</h1>
+            <p class="header-note">
+                The main coursework requirements we focused on were managing data through the web
+                interface, showing reports from live SQL queries, and keeping the layout consistent
+                across the pages.
+            </p>
         </section>
 
-        <section class="panel">
-            <div class="section-heading">
-                <div>
-                    <p class="eyebrow">Dashboard</p>
-                    <h2>System overview</h2>
+        <section class="dashboard-links-row">
+            <article class="dashboard-link-card green-card">
+                <div class="card-round-icon">
+                    <img src="money-graph-with-up-arrow.png" alt="Stock icon">
                 </div>
-                <p class="section-text">The summary cards below load directly from the database.</p>
+                <h2>Stock page</h2>
+                <p>This page lets us search stock records and check which items are running low.</p>
+                <a class="main-button green-button" href="stock.html">Open Stock</a>
+            </article>
+
+            <article class="dashboard-link-card orange-card">
+                <div class="card-round-icon">
+                    <img src="home.png" alt="Household icon">
+                </div>
+                <h2>Household page</h2>
+                <p>This page is for the CRUD part of the project where household data can be added, edited, and deleted.</p>
+                <a class="main-button orange-button" href="households.html">Open Households</a>
+            </article>
+
+            <article class="dashboard-link-card purple-card">
+                <div class="card-round-icon">
+                    <img src="report.png" alt="Report icon">
+                </div>
+                <h2>Reports page</h2>
+                <p>This page shows a table report and a Chart.js graph using live values from the database.</p>
+                <a class="main-button purple-button" href="reports.html">Open Reports</a>
+            </article>
+
+            <article class="dashboard-link-card blue-card">
+                <div class="card-round-icon">
+                    <img src="dashboard.png" alt="Dashboard icon">
+                </div>
+                <h2>Dashboard summary</h2>
+                <p>This section gives a quick overview of the main totals stored in our system.</p>
+                <a class="main-button blue-button" href="#summarySection">View Summary</a>
+            </article>
+        </section>
+
+        <section id="summarySection" class="data-box">
+            <div class="data-box-top">
+                <div>
+                    <p class="small-top-text">Dashboard</p>
+                    <h2>What our system is tracking</h2>
+                </div>
+                <p class="box-info-text">These values load from the database so we can prove the page is using live data.</p>
             </div>
 
-            <div class="stats-grid">
-                <article class="stat-card">
-                    <span class="stat-label">Food banks</span>
+            <div class="stats-card-row">
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Food banks</span>
                     <strong id="foodBankCount">--</strong>
-                    <p>Registered organisations in the system.</p>
+                    <p>Organisations in the database.</p>
                 </article>
-                <article class="stat-card">
-                    <span class="stat-label">Donations</span>
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Donations</span>
                     <strong id="donationCount">--</strong>
-                    <p>Donation records currently stored in the database.</p>
+                    <p>Donation records stored in the database.</p>
                 </article>
-                <article class="stat-card">
-                    <span class="stat-label">Households</span>
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Households</span>
                     <strong id="householdCount">--</strong>
-                    <p>Clients currently recorded for support.</p>
+                    <p>Households currently recorded for support.</p>
                 </article>
-                <article class="stat-card">
-                    <span class="stat-label">Low stock items</span>
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Low stock items</span>
                     <strong id="lowStockCount">--</strong>
                     <p>Records at or below the dashboard alert threshold.</p>
                 </article>
             </div>
-        </section>
-
-        <section class="content-grid">
-            <section class="panel">
-                <div class="section-heading">
-                    <div>
-                        <p class="eyebrow">Priority attention</p>
-                        <h2>Low stock alert</h2>
-                    </div>
-                    <a class="text-link" href="stock.html">Open stock page</a>
-                </div>
-
-                <div id="lowStockTable" class="table-shell">
-                    <p class="status-message">Loading low stock items...</p>
-                </div>
-            </section>
-
-            <section class="panel">
-                <div class="section-heading">
-                    <div>
-                        <p class="eyebrow">Service activity</p>
-                        <h2>Distributions by food bank</h2>
-                    </div>
-                    <a class="text-link" href="reports.html">Open reports</a>
-                </div>
-
-                <div id="householdSummaryTable" class="table-shell">
-                    <p class="status-message">Loading distribution summary...</p>
-                </div>
-            </section>
-        </section>
+        </section> 
     </main>
 
-    <footer class="site-footer">
-        <div class="container footer-inner">
-            <p>&copy; <span id="year"></span> Food Bank Support System</p>
-            <p>CSC1034 group project website</p>
+    <footer class="main-footer">
+        <div class="page-width main-footer-text">
+            <p>James, Kathan, Devadath, Dan</p>
+            <p>CSC1034 data driven systems group coursework</p>
         </div>
     </footer>
 
