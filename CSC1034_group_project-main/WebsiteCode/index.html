@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Bank Group 18 Home</title>
+    <link rel="icon" type="image/jpeg" href="custom-favicon.jpeg?v=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="dashboard">
+    <header class="main-header">
+        <div class="page-width header-inside">
+            <a class="logo-area" href="index.html">
+                <span>
+                    <strong>Group 18 Food Bank Project</strong>
+                    <small>SDG 2 Zero Hunger</small>
+                </span>
+            </a>
+
+            <nav class="header-nav" aria-label="Main navigation">
+                <a href="index.html">Dashboard</a>
+                <a href="stock.html">Stock</a>
+                <a href="households.html">Households</a>
+                <a href="reports.html">Reports</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-width data-display-main">
+        <section class="main-header-text">
+            <p class="small-top-text">CSC1034 Coursework</p>
+            <h1>Food bank database website for our group project</h1>
+            <p class="header-note">
+                The main coursework requirements we focused on were managing data through the web
+                interface, showing reports from live SQL queries, and keeping the layout consistent
+                across the pages.
+            </p>
+        </section>
+
+        <section class="dashboard-links-row">
+            <article class="dashboard-link-card green-card">
+                <div class="card-round-icon">
+                    <img src="../money-graph-with-up-arrow.png" alt="Stock icon">
+                </div>
+                <h2>Stock page</h2>
+                <p>This page lets us search stock records and check which items are running low.</p>
+                <a class="main-button green-button" href="stock.html">Open Stock</a>
+            </article>
+
+            <article class="dashboard-link-card orange-card">
+                <div class="card-round-icon">
+                    <img src="../home.png" alt="Household icon">
+                </div>
+                <h2>Household page</h2>
+                <p>This page is for the CRUD part of the project where household data can be added, edited, and deleted.</p>
+                <a class="main-button orange-button" href="households.html">Open Households</a>
+            </article>
+
+            <article class="dashboard-link-card purple-card">
+                <div class="card-round-icon">
+                    <img src="../report.png" alt="Report icon">
+                </div>
+                <h2>Reports page</h2>
+                <p>This page shows a table report and a Chart.js graph using live values from the database.</p>
+                <a class="main-button purple-button" href="reports.html">Open Reports</a>
+            </article>
+
+            <article class="dashboard-link-card blue-card">
+                <div class="card-round-icon">
+                    <img src="../dashboard.png" alt="Dashboard icon">
+                </div>
+                <h2>Dashboard summary</h2>
+                <p>This section gives a quick overview of the main totals stored in our system.</p>
+                <a class="main-button blue-button" href="#summarySection">View Summary</a>
+            </article>
+        </section>
+
+        <section id="summarySection" class="data-box">
+            <div class="data-box-top">
+                <div>
+                    <p class="small-top-text">Dashboard</p>
+                    <h2>What our system is tracking</h2>
+                </div>
+                <p class="box-info-text">These values load from the database so we can prove the page is using live data.</p>
+            </div>
+
+            <div class="stats-card-row">
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Food banks</span>
+                    <strong id="foodBankCount">--</strong>
+                    <p>Organisations in the database.</p>
+                </article>
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Donations</span>
+                    <strong id="donationCount">--</strong>
+                    <p>Donation records stored in the database.</p>
+                </article>
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Households</span>
+                    <strong id="householdCount">--</strong>
+                    <p>Households currently recorded for support.</p>
+                </article>
+                <article class="stats-card-box">
+                    <span class="stats-card-name">Low stock items</span>
+                    <strong id="lowStockCount">--</strong>
+                    <p>Records at or below the dashboard alert threshold.</p>
+                </article>
+            </div>
+
+            <p id="dashboardMessage" class="message-box" aria-live="polite"></p>
+        </section> 
+    </main>
+
+    <footer class="main-footer">
+        <div class="page-width main-footer-text">
+            <p>James, Kathan, Devadath, Dan</p>
+            <p>CSC1034 data driven systems group coursework</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="js/myJs.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
