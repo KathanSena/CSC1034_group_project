@@ -103,29 +103,30 @@ const reports = [
         ],
         sql: `
             SELECT
-                fb.foodbank_name,
-                COALESCE(d_total.total_donated, 0) AS total_donated,
-                COALESCE(dist_total.total_distributed, 0) AS total_distributed,
-                COALESCE(d_total.total_donated, 0) - COALESCE(dist_total.total_distributed, 0) AS net_balance
-            FROM FoodBank fb
-            LEFT JOIN (
-                SELECT
-                    d.foodbank_id,
-                    SUM(di.quantity) AS total_donated
-                FROM Donation d
-                INNER JOIN DonationItem di ON d.donation_id = di.donation_id
-                GROUP BY d.foodbank_id
-            ) d_total ON fb.foodbank_id = d_total.foodbank_id
-            LEFT JOIN (
-                SELECT
-                    dist.foodbank_id,
-                    SUM(di.quantity_given) AS total_distributed
-                FROM Distribution dist
-                INNER JOIN DistributionItem di ON dist.distribution_id = di.distribution_id
-                GROUP BY dist.foodbank_id
-            ) dist_total ON fb.foodbank_id = dist_total.foodbank_id
-            ORDER BY net_balance ASC
-            LIMIT 10;
+    fb.foodbank_name,
+    d_total.total_donated AS total_donated,
+    dist_total.total_distributed AS total_distributed,
+    d_total.total_donated - dist_total.total_distributed AS net_balance
+FROM FoodBank fb
+LEFT JOIN (
+    SELECT
+        d.foodbank_id,
+        SUM(di.quantity) AS total_donated
+    FROM Donation d
+    INNER JOIN DonationItem di ON d.donation_id = di.donation_id
+    GROUP BY d.foodbank_id
+) d_total ON fb.foodbank_id = d_total.foodbank_id
+LEFT JOIN (
+    SELECT
+        dist.foodbank_id,
+        SUM(di.quantity_given) AS total_distributed
+    FROM Distribution dist
+    INNER JOIN DistributionItem di ON dist.distribution_id = di.distribution_id
+    GROUP BY dist.foodbank_id
+) dist_total ON fb.foodbank_id = dist_total.foodbank_id
+ORDER BY net_balance ASC
+LIMIT 10;
+
         `
     },
     {
