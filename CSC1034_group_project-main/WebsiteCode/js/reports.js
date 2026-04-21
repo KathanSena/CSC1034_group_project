@@ -2,19 +2,16 @@ let stockChart = null;
 let activeReportIndex = 0;
 
 const formatDate = (value) => {
-    if (!value) {
-        return "Not set";
-    }
-
+    if (!value) return "Not set";
     return new Date(value).toLocaleDateString("en-GB");
 };
 
 const reports = [
     {
-        tab: "Stock priority",
-        title: "Report Title: Low Stock Food Banks (Stock Priority)",
-        tableTitle: "Food banks with the lowest stock",
-        problem: "Problem: understocked food banks need to be prioritised for redistribution before shortages happen.",
+        tab: "Low stock",
+        title: "Report Title: Food Banks with Low Stock",
+        tableTitle: "Food banks with the least stock",
+        problem: "Problem: finding food banks that may run out of stock soon.",
         chartLabel: "Total Stock",
         chartType: "bar",
         labelField: "foodbank_name",
@@ -24,259 +21,255 @@ const reports = [
             { heading: "Total Stock", field: "total_stock" }
         ],
         sql: `
-            SELECT
-                fb.foodbank_name,
-                SUM(s.quantity_in_stock) AS total_stock
+            SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock
             FROM Stock s
-            LEFT JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
+            JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
             GROUP BY fb.foodbank_name
-            HAVING total_stock > 0
             ORDER BY total_stock ASC
             LIMIT 10;
         `
     },
     {
+        tab: "Top stock",
+        title: "Report Title: Food Banks with Most Stock",
+        tableTitle: "Food banks with the most stock",
+        problem: "Problem: seeing which food banks are currently well supplied.",
+        chartLabel: "Total Stock",
+        chartType: "bar",
+        labelField: "foodbank_name",
+        valueField: "total_stock",
+        columns: [
+            { heading: "Food Bank", field: "foodbank_name" },
+            { heading: "Total Stock", field: "total_stock" }
+        ],
+        sql: `
+            SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock
+            FROM Stock s
+            JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
+            GROUP BY fb.foodbank_name
+            ORDER BY total_stock DESC
+            LIMIT 10;
+        `
+    },
+    {
         tab: "Top donors",
-        title: "Report Title: Top Donors by Contribution",
-        tableTitle: "Donors contributing the most items",
-        problem: "Problem: the organisation needs to identify key donors and maintain strong donor relationships.",
-        chartLabel: "Total Donated",
+        title: "Report Title: Donors Giving the Most",
+        tableTitle: "Top donors by quantity",
+        problem: "Problem: identifying donors who give the most support.",
+        chartLabel: "Items Donated",
         chartType: "bar",
         labelField: "donor_name",
         valueField: "total_donated",
         columns: [
             { heading: "Donor", field: "donor_name" },
-            { heading: "Total Donated", field: "total_donated" }
+            { heading: "Items Donated", field: "total_donated" }
         ],
         sql: `
-            SELECT
-                d.donor_name,
-                SUM(di.quantity) AS total_donated
+            SELECT d.donor_name, SUM(di.quantity) AS total_donated
             FROM Donation d
-            INNER JOIN DonationItem di ON d.donation_id = di.donation_id
+            JOIN DonationItem di ON d.donation_id = di.donation_id
             GROUP BY d.donor_name
-            HAVING total_donated > 0
             ORDER BY total_donated DESC
             LIMIT 10;
         `
     },
     {
-        tab: "Avg household",
-        title: "Report Title: Average Household Size per Food Bank",
-        tableTitle: "Average household size served",
-        problem: "Problem: food parcel sizes should match the household sizes each food bank supports.",
-        chartLabel: "Average Household Size",
+        tab: "Active donors",
+        title: "Report Title: Most Active Donors",
+        tableTitle: "Donors by number of donations",
+        problem: "Problem: finding donors who donate often.",
+        chartLabel: "Donation Count",
         chartType: "bar",
-        labelField: "foodbank_name",
-        valueField: "avg_household_size",
+        labelField: "donor_name",
+        valueField: "donation_count",
         columns: [
-            { heading: "Food Bank", field: "foodbank_name" },
-            { heading: "Average Household Size", field: "avg_household_size" }
+            { heading: "Donor", field: "donor_name" },
+            { heading: "Donation Count", field: "donation_count" }
         ],
         sql: `
-            SELECT
-                fb.foodbank_name,
-                ROUND(AVG(h.household_size), 2) AS avg_household_size
-            FROM FoodBank fb
-            INNER JOIN Distribution d ON fb.foodbank_id = d.foodbank_id
-            INNER JOIN Household h ON d.household_id = h.household_id
-            GROUP BY fb.foodbank_name
-            HAVING avg_household_size > 0
-            ORDER BY avg_household_size DESC
+            SELECT donor_name, COUNT(*) AS donation_count
+            FROM Donation
+            GROUP BY donor_name
+            ORDER BY donation_count DESC
             LIMIT 10;
         `
     },
     {
-        tab: "Stock balance",
-        title: "Report Title: Donations vs Distribution",
-        tableTitle: "Donation and distribution balance",
-        problem: "Problem: food banks need to know whether they receive enough donations compared with what they give out.",
-        chartLabel: "Net Balance",
+        tab: "Busy banks",
+        title: "Report Title: Food Banks Serving Most Households",
+        tableTitle: "Food banks with highest household reach",
+        problem: "Problem: seeing which food banks are helping the most households.",
+        chartLabel: "Households Served",
         chartType: "bar",
         labelField: "foodbank_name",
-        valueField: "net_balance",
+        valueField: "households_served",
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
-            { heading: "Total Donated", field: "total_donated" },
-            { heading: "Total Distributed", field: "total_distributed" },
-            { heading: "Net Balance", field: "net_balance" }
+            { heading: "Households Served", field: "households_served" }
         ],
         sql: `
-            SELECT
-    fb.foodbank_name,
-    d_total.total_donated AS total_donated,
-    dist_total.total_distributed AS total_distributed,
-    d_total.total_donated - dist_total.total_distributed AS net_balance
-FROM FoodBank fb
-LEFT JOIN (
-    SELECT
-        d.foodbank_id,
-        SUM(di.quantity) AS total_donated
-    FROM Donation d
-    INNER JOIN DonationItem di ON d.donation_id = di.donation_id
-    GROUP BY d.foodbank_id
-) d_total ON fb.foodbank_id = d_total.foodbank_id
-LEFT JOIN (
-    SELECT
-        dist.foodbank_id,
-        SUM(di.quantity_given) AS total_distributed
-    FROM Distribution dist
-    INNER JOIN DistributionItem di ON dist.distribution_id = di.distribution_id
-    GROUP BY dist.foodbank_id
-) dist_total ON fb.foodbank_id = dist_total.foodbank_id
-ORDER BY net_balance ASC
-LIMIT 10;
-
+            SELECT fb.foodbank_name, COUNT(DISTINCT d.household_id) AS households_served
+            FROM Distribution d
+            JOIN FoodBank fb ON d.foodbank_id = fb.foodbank_id
+            GROUP BY fb.foodbank_name
+            ORDER BY households_served DESC
+            LIMIT 10;
         `
     },
     {
-        tab: "Waste risk",
-        title: "Report Title: Food Waste Risk",
-        tableTitle: "Short shelf-life items with stock",
-        problem: "Problem: items with short shelf life and stock available may be wasted if they are not distributed quickly.",
-        chartLabel: "Quantity In Stock",
+        tab: "Big homes",
+        title: "Report Title: Largest Households",
+        tableTitle: "Households with the most people",
+        problem: "Problem: finding larger households that may need more support.",
+        chartLabel: "Household Size",
         chartType: "bar",
-        labelField: "item_name",
-        valueField: "quantity_in_stock",
+        labelField: "household_id",
+        valueField: "household_size",
         columns: [
-            { heading: "Item", field: "item_name" },
-            { heading: "Shelf Life Days", field: "shelf_life_days" },
-            { heading: "Quantity In Stock", field: "quantity_in_stock" }
+            { heading: "Household ID", field: "household_id" },
+            { heading: "Household Size", field: "household_size" }
         ],
         sql: `
-            SELECT
-                fi.item_name,
-                fi.shelf_life_days,
-                s.quantity_in_stock
-            FROM Stock s
-            INNER JOIN FoodItem fi ON s.item_id = fi.item_id
-            WHERE fi.shelf_life_days IS NOT NULL
-            AND s.quantity_in_stock > 0
-            ORDER BY fi.shelf_life_days ASC, s.quantity_in_stock DESC
+            SELECT household_id, household_size
+            FROM Household
+            ORDER BY household_size DESC
             LIMIT 10;
         `
     },
     {
         tab: "Top items",
-        title: "Report Title: Most Distributed Items",
-        tableTitle: "Food items used most often",
-        problem: "Problem: high-demand items need stronger stock planning to prevent frequent shortages.",
-        chartLabel: "Total Distributed",
+        title: "Report Title: Most Given Out Items",
+        tableTitle: "Items distributed the most",
+        problem: "Problem: finding which food items are in highest demand.",
+        chartLabel: "Total Given",
         chartType: "bar",
         labelField: "item_name",
-        valueField: "total_distributed",
+        valueField: "total_given",
         columns: [
             { heading: "Item", field: "item_name" },
-            { heading: "Category", field: "category" },
-            { heading: "Total Distributed", field: "total_distributed" },
-            { heading: "Times Distributed", field: "times_distributed" }
+            { heading: "Total Given", field: "total_given" }
         ],
         sql: `
-            SELECT
-                fi.item_name,
-                fi.category,
-                SUM(di.quantity_given) AS total_distributed,
-                COUNT(DISTINCT d.distribution_id) AS times_distributed
-            FROM FoodItem fi
-            LEFT JOIN DistributionItem di ON fi.item_id = di.item_id
-            LEFT JOIN Distribution d ON di.distribution_id = d.distribution_id
-            GROUP BY fi.item_id, fi.item_name, fi.category
-            HAVING total_distributed IS NOT NULL
-            ORDER BY total_distributed DESC
+            SELECT fi.item_name, SUM(di.quantity_given) AS total_given
+            FROM DistributionItem di
+            JOIN FoodItem fi ON di.item_id = fi.item_id
+            GROUP BY fi.item_name
+            ORDER BY total_given DESC
             LIMIT 10;
         `
     },
     {
-        tab: "Household fairness",
-        title: "Report Title: Distribution per Household",
-        tableTitle: "Items received per person",
-        problem: "Problem: the organisation needs to check whether resources are being distributed fairly across households.",
-        chartLabel: "Items Per Person",
+        tab: "Low items",
+        title: "Report Title: Least Distributed Items",
+        tableTitle: "Items given out the least",
+        problem: "Problem: spotting items that are rarely used.",
+        chartLabel: "Total Given",
+        chartType: "bar",
+        labelField: "item_name",
+        valueField: "total_given",
+        columns: [
+            { heading: "Item", field: "item_name" },
+            { heading: "Total Given", field: "total_given" }
+        ],
+        sql: `
+            SELECT fi.item_name, SUM(di.quantity_given) AS total_given
+            FROM DistributionItem di
+            JOIN FoodItem fi ON di.item_id = fi.item_id
+            GROUP BY fi.item_name
+            ORDER BY total_given ASC
+            LIMIT 10;
+        `
+    },
+    {
+        tab: "Popular type",
+        title: "Report Title: Most Distributed Categories",
+        tableTitle: "Item categories used the most",
+        problem: "Problem: understanding which categories are most needed.",
+        chartLabel: "Total Given",
+        chartType: "bar",
+        labelField: "category",
+        valueField: "total_given",
+        columns: [
+            { heading: "Category", field: "category" },
+            { heading: "Total Given", field: "total_given" }
+        ],
+        sql: `
+            SELECT fi.category, SUM(di.quantity_given) AS total_given
+            FROM DistributionItem di
+            JOIN FoodItem fi ON di.item_id = fi.item_id
+            GROUP BY fi.category
+            ORDER BY total_given DESC
+            LIMIT 10;
+        `
+    },
+    {
+        tab: "Stock by item",
+        title: "Report Title: Items with Highest Stock",
+        tableTitle: "Items currently most in stock",
+        problem: "Problem: seeing which items are heavily stocked.",
+        chartLabel: "Stock",
+        chartType: "bar",
+        labelField: "item_name",
+        valueField: "stock_total",
+        columns: [
+            { heading: "Item", field: "item_name" },
+            { heading: "Stock", field: "stock_total" }
+        ],
+        sql: `
+            SELECT fi.item_name, SUM(s.quantity_in_stock) AS stock_total
+            FROM Stock s
+            JOIN FoodItem fi ON s.item_id = fi.item_id
+            GROUP BY fi.item_name
+            ORDER BY stock_total DESC
+            LIMIT 10;
+        `
+    },
+    {
+        tab: "Recent help",
+        title: "Report Title: Households Helped Most Often",
+        tableTitle: "Households with the most distributions",
+        problem: "Problem: identifying households receiving support most often.",
+        chartLabel: "Distribution Count",
         chartType: "bar",
         labelField: "household_id",
-        valueField: "items_per_person",
+        valueField: "times_helped",
         columns: [
             { heading: "Household ID", field: "household_id" },
-            { heading: "Household Size", field: "household_size" },
-            { heading: "Total Visits", field: "total_visits" },
-            { heading: "Total Items Received", field: "total_items_received" },
-            { heading: "Items Per Person", field: "items_per_person" }
+            { heading: "Distribution Count", field: "times_helped" }
         ],
         sql: `
-            SELECT
-                h.household_id,
-                h.household_size,
-                COUNT(DISTINCT d.distribution_id) AS total_visits,
-                SUM(di.quantity_given) AS total_items_received,
-                ROUND(SUM(di.quantity_given) / NULLIF(h.household_size, 0), 2) AS items_per_person
-            FROM Household h
-            INNER JOIN Distribution d ON h.household_id = d.household_id
-            LEFT JOIN DistributionItem di ON d.distribution_id = di.distribution_id
-            GROUP BY h.household_id, h.household_size
-            HAVING total_items_received IS NOT NULL
-            ORDER BY items_per_person DESC
+            SELECT household_id, COUNT(*) AS times_helped
+            FROM Distribution
+            GROUP BY household_id
+            ORDER BY times_helped DESC
             LIMIT 10;
         `
     },
     {
-        tab: "Avg visit",
-        title: "Report Title: Average Items per Visit",
-        tableTitle: "Average items given per distribution",
-        problem: "Problem: food banks need to check whether parcel sizes are consistent across centres.",
-        chartLabel: "Average Items per Visit",
+        tab: "Avg parcel",
+        title: "Report Title: Average Items Per Distribution",
+        tableTitle: "Average items given out by food bank",
+        problem: "Problem: comparing how much each food bank gives per visit.",
+        chartLabel: "Average Items",
         chartType: "bar",
         labelField: "foodbank_name",
-        valueField: "avg_items_per_visit",
+        valueField: "avg_items",
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
-            { heading: "Total Visits", field: "total_visits" },
-            { heading: "Total Items Distributed", field: "total_items_distributed" },
-            { heading: "Average Items per Visit", field: "avg_items_per_visit" }
+            { heading: "Average Items", field: "avg_items" }
         ],
         sql: `
-            SELECT
-                fb.foodbank_name,
-                COUNT(DISTINCT d.distribution_id) AS total_visits,
-                SUM(di.quantity_given) AS total_items_distributed,
-                ROUND(SUM(di.quantity_given) / NULLIF(COUNT(DISTINCT d.distribution_id), 0), 2) AS avg_items_per_visit
-            FROM FoodBank fb
-            INNER JOIN Distribution d ON fb.foodbank_id = d.foodbank_id
-            LEFT JOIN DistributionItem di ON d.distribution_id = di.distribution_id
-            GROUP BY fb.foodbank_id, fb.foodbank_name
-            HAVING total_visits > 0
-            ORDER BY avg_items_per_visit DESC
-            LIMIT 10;
-        `
-    },
-    {
-        tab: "Donation variety",
-        title: "Report Title: Donation Diversity",
-        tableTitle: "Variety of donated items by food bank",
-        problem: "Problem: food banks need a varied supply, not just a high quantity of the same items.",
-        chartLabel: "Unique Items Received",
-        chartType: "bar",
-        labelField: "foodbank_name",
-        valueField: "unique_items_received",
-        columns: [
-            { heading: "Food Bank", field: "foodbank_name" },
-            { heading: "Unique Items Received", field: "unique_items_received" },
-            { heading: "Total Items Received", field: "total_items_received" }
-        ],
-        sql: `
-            SELECT
-                fb.foodbank_name,
-                COUNT(DISTINCT di.item_id) AS unique_items_received,
-                SUM(di.quantity) AS total_items_received
-            FROM FoodBank fb
-            LEFT JOIN Donation d ON fb.foodbank_id = d.foodbank_id
-            LEFT JOIN DonationItem di ON d.donation_id = di.donation_id
-            GROUP BY fb.foodbank_id, fb.foodbank_name
-            HAVING total_items_received IS NOT NULL
-            ORDER BY unique_items_received DESC
+            SELECT fb.foodbank_name, ROUND(AVG(di.quantity_given), 2) AS avg_items
+            FROM Distribution d
+            JOIN DistributionItem di ON d.distribution_id = di.distribution_id
+            JOIN FoodBank fb ON d.foodbank_id = fb.foodbank_id
+            GROUP BY fb.foodbank_name
+            ORDER BY avg_items DESC
             LIMIT 10;
         `
     }
 ];
+
 
 const chartColors = [
     "#2ea66f",
@@ -307,7 +300,7 @@ const drawChart = (report, rows) => {
         return;
     }
 
-    const labels = [];
+    const labels = []; 
     const values = [];
 
     for (let row of rows) {
