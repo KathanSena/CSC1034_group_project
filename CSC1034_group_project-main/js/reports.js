@@ -1,7 +1,7 @@
-let stockChart = null;
-let activeReportIndex = 0;
+var stockChart = null;
+var activeReportIndex = 0;
 
-// changes a date into normal uk format
+// this changes dates into normal uk style dates
 function formatDate(value) {
     if (!value) {
         return "Not set";
@@ -10,7 +10,9 @@ function formatDate(value) {
     return new Date(value).toLocaleDateString("en-GB");
 }
 
-const reports = [
+// this is the big list of all reports on the page
+// each one has the button name, headings, chart info and sql query
+var reports = [
     {
         tab: "Low stock",
         title: "Report Title: Food Banks with Low Stock",
@@ -23,14 +25,15 @@ const reports = [
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
             { heading: "Total Stock", field: "total_stock" }
-        ], //kathan query 1
-        sql: ` 
-            SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock
-            FROM Stock s
-            JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
-            GROUP BY fb.foodbank_name
-            ORDER BY total_stock ASC
-            LIMIT 10;
+        ],//kathan query 1
+        sql: `
+           SELECT 
+              foodbank_name,
+           total_stock
+        FROM vw_foodbank_total_stock
+        WHERE total_stock IS NOT NULL
+          ORDER BY total_stock ASC
+          LIMIT 10;
         `
     },
     {
@@ -47,11 +50,14 @@ const reports = [
             { heading: "Total Stock", field: "total_stock" }
         ], //kathan query 2
         sql: `
-            SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock
-            FROM Stock s
-            JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
-            GROUP BY fb.foodbank_name
-            ORDER BY total_stock DESC
+            SELECT 
+    fb.foodbank_name,
+    SUM(s.quantity_in_stock) AS total_stock
+       FROM FoodBank fb
+      LEFT JOIN Stock s ON fb.foodbank_id = s.foodbank_id
+           GROUP BY fb.foodbank_id, fb.foodbank_name
+         HAVING total_stock IS NOT NULL
+           ORDER BY total_stock DESC
             LIMIT 10;
         `
     },
@@ -67,14 +73,16 @@ const reports = [
         columns: [
             { heading: "Donor", field: "donor_name" },
             { heading: "Items Donated", field: "total_donated" }
-        ],//kathan query 3
+        ], //kathan query 3
         sql: `
-            SELECT d.donor_name, SUM(di.quantity) AS total_donated
-            FROM Donation d
-            JOIN DonationItem di ON d.donation_id = di.donation_id
-            GROUP BY d.donor_name
-            ORDER BY total_donated DESC
-            LIMIT 10;
+           SELECT 
+    d.donor_name,
+    SUM(di.quantity) AS total_donated
+           FROM Donation d
+         INNER JOIN DonationItem di ON d.donation_id = di.donation_id
+              GROUP BY d.donor_name
+           ORDER BY total_donated DESC
+               LIMIT 10;
         `
     },
     {
@@ -89,11 +97,12 @@ const reports = [
         columns: [
             { heading: "Donor", field: "donor_name" },
             { heading: "Donation Count", field: "donation_count" }
-        ], // dan query 1 
+        ], //dan query 1
         sql: `
-            SELECT donor_name, COUNT(*) AS donation_count
-            FROM Donation
-            GROUP BY donor_name
+            SELECT 
+                donor_name,
+                donation_count
+            FROM vw_donor_activity
             ORDER BY donation_count DESC
             LIMIT 10;
         `
@@ -110,14 +119,16 @@ const reports = [
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
             { heading: "Households Served", field: "households_served" }
-        ], // dan query 2 
+        ],//dan query 2
         sql: `
-            SELECT fb.foodbank_name, COUNT(DISTINCT d.household_id) AS households_served
-            FROM Distribution d
-            JOIN FoodBank fb ON d.foodbank_id = fb.foodbank_id
-            GROUP BY fb.foodbank_name
-            ORDER BY households_served DESC
-            LIMIT 10;
+            SELECT 
+    fb.foodbank_name,
+    COUNT(DISTINCT d.household_id) AS households_served
+FROM FoodBank fb
+LEFT JOIN Distribution d ON fb.foodbank_id = d.foodbank_id
+GROUP BY fb.foodbank_id, fb.foodbank_name
+ORDER BY households_served DESC
+LIMIT 10;
         `
     },
     {
@@ -132,11 +143,15 @@ const reports = [
         columns: [
             { heading: "Household ID", field: "household_id" },
             { heading: "Household Size", field: "household_size" }
-        ],// dan query 3  
+        ],//dan query 3
         sql: `
-            SELECT household_id, household_size
-            FROM Household
-            ORDER BY household_size DESC
+            SELECT 
+                h.household_id,
+                h.household_size
+            FROM Household h
+            LEFT JOIN Distribution d ON h.household_id = d.household_id
+            GROUP BY h.household_id, h.household_size
+            ORDER BY h.household_size DESC
             LIMIT 10;
         `
     },
@@ -152,14 +167,14 @@ const reports = [
         columns: [
             { heading: "Item", field: "item_name" },
             { heading: "Total Given", field: "total_given" }
-        ], // dev query 1 
+        ],// dev query 1
         sql: `
-            SELECT fi.item_name, SUM(di.quantity_given) AS total_given
-            FROM DistributionItem di
-            JOIN FoodItem fi ON di.item_id = fi.item_id
-            GROUP BY fi.item_name
-            ORDER BY total_given DESC
-            LIMIT 10;
+          SELECT 
+    item_name,
+    total_given
+FROM vw_item_distribution_totals
+ORDER BY total_given DESC
+LIMIT 10;
         `
     },
     {
@@ -174,12 +189,14 @@ const reports = [
         columns: [
             { heading: "Item", field: "item_name" },
             { heading: "Total Given", field: "total_given" }
-        ], // dev query 2
+        ],// dev query 2
         sql: `
-            SELECT fi.item_name, SUM(di.quantity_given) AS total_given
-            FROM DistributionItem di
-            JOIN FoodItem fi ON di.item_id = fi.item_id
-            GROUP BY fi.item_name
+            SELECT 
+                fi.item_name,
+                SUM(di.quantity_given) AS total_given
+            FROM FoodItem fi
+            INNER JOIN DistributionItem di ON fi.item_id = di.item_id
+            GROUP BY fi.item_id, fi.item_name
             ORDER BY total_given ASC
             LIMIT 10;
         `
@@ -196,14 +213,16 @@ const reports = [
         columns: [
             { heading: "Category", field: "category" },
             { heading: "Total Given", field: "total_given" }
-        ], // dev query 3
+        ],// dev query 3
         sql: `
-            SELECT fi.category, SUM(di.quantity_given) AS total_given
-            FROM DistributionItem di
-            JOIN FoodItem fi ON di.item_id = fi.item_id
-            GROUP BY fi.category
-            ORDER BY total_given DESC
-            LIMIT 10;
+            SELECT 
+    fi.category,
+    SUM(di.quantity_given) AS total_given
+FROM FoodItem fi
+INNER JOIN DistributionItem di ON fi.item_id = di.item_id
+GROUP BY fi.category
+ORDER BY total_given DESC
+LIMIT 10;
         `
     },
     {
@@ -218,14 +237,13 @@ const reports = [
         columns: [
             { heading: "Item", field: "item_name" },
             { heading: "Stock", field: "stock_total" }
-        ], // james query 1
+        ], //james query 1
         sql: `
-            SELECT fi.item_name, SUM(s.quantity_in_stock) AS stock_total
-            FROM Stock s
-            JOIN FoodItem fi ON s.item_id = fi.item_id
-            GROUP BY fi.item_name
-            ORDER BY stock_total DESC
-            LIMIT 10;
+          select item_name, stock_total
+           from vw_item_stock_totals
+          where stock_total is not null
+           order by stock_total desc
+               limit 10;
         `
     },
     {
@@ -240,13 +258,15 @@ const reports = [
         columns: [
             { heading: "Household ID", field: "household_id" },
             { heading: "Distribution Count", field: "times_helped" }
-        ], // james query 2
+        ], //james query 2
         sql: `
-            SELECT household_id, COUNT(*) AS times_helped
-            FROM Distribution
-            GROUP BY household_id
-            ORDER BY times_helped DESC
-            LIMIT 10;
+           select h.household_id, h.postcode, count(d.distribution_id) as times_helped
+      from Household h
+    left join Distribution d on h.household_id = d.household_id
+group by h.household_id, h.postcode
+having count(d.distribution_id) > 0
+order by times_helped desc
+limit 10;
         `
     },
     {
@@ -261,21 +281,21 @@ const reports = [
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
             { heading: "Average Items", field: "avg_items" }
-        ], // james query 3
+        ],//james query 3
         sql: `
-            SELECT fb.foodbank_name, ROUND(AVG(di.quantity_given), 2) AS avg_items
-            FROM Distribution d
-            JOIN DistributionItem di ON d.distribution_id = di.distribution_id
-            JOIN FoodBank fb ON d.foodbank_id = fb.foodbank_id
-            GROUP BY fb.foodbank_name
-            ORDER BY avg_items DESC
-            LIMIT 10;
+           select fb.foodbank_name, round(avg(di.quantity_given), 2) as avg_items
+from Distribution d
+inner join DistributionItem di on d.distribution_id = di.distribution_id
+inner join FoodBank fb on d.foodbank_id = fb.foodbank_id
+group by fb.foodbank_name
+order by avg_items desc
+limit 10;
         `
     }
 ];
 
-// colours for charts
-const chartColors = [
+// these are the colours for the chart bars or pie slices
+var chartColors = [
     "#2ea66f",
     "#3e84d8",
     "#ef9732",
@@ -287,11 +307,13 @@ const chartColors = [
     "#4f9a94"
 ];
 
-// gets the value to print in the table
+// this gets one value out of one row for the table
+// if the value is empty it just says not set
+// if the column is a date it formats it first
 function formatCellValue(row, column) {
     var value = row[column.field];
 
-    if (column.type === "date") {
+    if (column.type == "date") {
         return formatDate(value);
     }
 
@@ -302,7 +324,8 @@ function formatCellValue(row, column) {
     return value;
 }
 
-// draws the chart
+// this makes the chart on the page
+// it gets the labels and values from the sql result rows
 function drawChart(report, rows) {
     var canvas = document.querySelector("#stockChart");
     var labels = [];
@@ -313,6 +336,7 @@ function drawChart(report, rows) {
         values.push(Number(rows[i][report.valueField]));
     }
 
+    // if there is already a chart there, remove it first
     if (stockChart) {
         stockChart.destroy();
     }
@@ -325,14 +349,14 @@ function drawChart(report, rows) {
                 {
                     label: report.chartLabel,
                     data: values,
-                    backgroundColor: report.chartType === "pie" ? chartColors : "#2e5d50"
+                    backgroundColor: report.chartType == "pie" ? chartColors : "#2e5d50"
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: report.chartType === "pie" ? {} : {
+            scales: report.chartType == "pie" ? {} : {
                 y: {
                     beginAtZero: true
                 }
@@ -341,7 +365,8 @@ function drawChart(report, rows) {
     });
 }
 
-// prints the table under the chart
+// this prints the report table under the chart
+// it just builds the html as one string and puts it on the page
 function printTable(report, rows) {
     var output = document.querySelector("#reportTableOutput");
     var html = "<table>";
@@ -368,19 +393,20 @@ function printTable(report, rows) {
     output.innerHTML = html;
 }
 
-// changes the text above the chart and table
+// this changes the text above the chart and table
+// each report has its own title and problem text
 function setReportText(report) {
     document.querySelector("#reportChartTitle").textContent = report.title;
     document.querySelector("#reportProblemText").textContent = report.problem;
     document.querySelector("#reportTableTitle").textContent = report.tableTitle;
 }
 
-// highlights the selected tab
+// this highlights the selected report button
 function setActiveTab() {
     var buttons = document.querySelectorAll(".report-tab");
 
     for (var i = 0; i < buttons.length; i++) {
-        if (i === activeReportIndex) {
+        if (i == activeReportIndex) {
             buttons[i].classList.add("is-active");
         } else {
             buttons[i].classList.remove("is-active");
@@ -388,7 +414,8 @@ function setActiveTab() {
     }
 }
 
-// runs the current report
+// this runs whichever report is selected right now
+// it changes the text, runs the sql, then draws the chart and table
 async function runActiveReport() {
     var report = reports[activeReportIndex];
     var output = document.querySelector("#reportTableOutput");
@@ -399,7 +426,7 @@ async function runActiveReport() {
 
     result = await runQuery(report.sql);
 
-    if (!result || !result.data || result.data.length === 0) {
+    if (!result || !result.data || result.data.length == 0) {
         output.textContent = "No rows returned.";
         return;
     }
@@ -408,7 +435,8 @@ async function runActiveReport() {
     printTable(report, result.data);
 }
 
-// makes the report buttons
+// this makes all the report buttons at the top
+// it loops through the reports array and makes one button for each report
 function buildReportTabs() {
     var tabBox = document.querySelector("#reportTabs");
 
@@ -424,21 +452,23 @@ function buildReportTabs() {
     setActiveTab();
 }
 
-// this runs when a tab is clicked
+// this runs when someone clicks one of the report buttons
 function openReport(index) {
     activeReportIndex = index;
     setActiveTab();
     runActiveReport();
 }
 
-// stops the form from reloading the page
-document.querySelector("#reportFilterForm").addEventListener("submit", function(event) {
+// this stops the form from refreshing the whole page
+// instead it just reruns the current report on the same page
+document.querySelector("#reportFilterForm").addEventListener("submit", function (event) {
     event.preventDefault();
     runActiveReport();
 });
 
-// load tabs and first report when page opens
-document.addEventListener("DOMContentLoaded", function() {
+// when the page first loads, make the buttons and run the first report
+// so the page is not empty when it opens
+document.addEventListener("DOMContentLoaded", function () {
     buildReportTabs();
     runActiveReport();
 });
