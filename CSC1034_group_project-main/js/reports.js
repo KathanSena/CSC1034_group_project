@@ -23,7 +23,7 @@ const reports = [
         sql: `
             SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock
             FROM Stock s
-            JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
+            JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id                            //Kathan query 1 
             GROUP BY fb.foodbank_name
             ORDER BY total_stock ASC
             LIMIT 10;
@@ -43,7 +43,7 @@ const reports = [
             { heading: "Total Stock", field: "total_stock" }
         ],
         sql: `
-            SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock
+            SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock                          //Kathan query 2 
             FROM Stock s
             JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
             GROUP BY fb.foodbank_name
@@ -65,11 +65,11 @@ const reports = [
             { heading: "Items Donated", field: "total_donated" }
         ],
         sql: `
-            SELECT d.donor_name, SUM(di.quantity) AS total_donated
+            SELECT d.donor_name, SUM(di.quantity) AS total_donated                           //Kathan query 3 
             FROM Donation d
-            JOIN DonationItem di ON d.donation_id = di.donation_id
+            JOIN DonationItem di ON d.donation_id = di.donation_id                         
             GROUP BY d.donor_name
-            ORDER BY total_donated DESC
+            ORDER BY total_donated DESC                                                
             LIMIT 10;
         `
     },
@@ -87,7 +87,7 @@ const reports = [
             { heading: "Donation Count", field: "donation_count" }
         ],
         sql: `
-            SELECT donor_name, COUNT(*) AS donation_count
+            SELECT donor_name, COUNT(*) AS donation_count                         // dan query 1
             FROM Donation
             GROUP BY donor_name
             ORDER BY donation_count DESC
@@ -108,7 +108,7 @@ const reports = [
             { heading: "Households Served", field: "households_served" }
         ],
         sql: `
-            SELECT fb.foodbank_name, COUNT(DISTINCT d.household_id) AS households_served
+            SELECT fb.foodbank_name, COUNT(DISTINCT d.household_id) AS households_served     // dan query 2
             FROM Distribution d
             JOIN FoodBank fb ON d.foodbank_id = fb.foodbank_id
             GROUP BY fb.foodbank_name
@@ -130,9 +130,9 @@ const reports = [
             { heading: "Household Size", field: "household_size" }
         ],
         sql: `
-            SELECT household_id, household_size
+            SELECT household_id, household_size                                             //dan  query 3
             FROM Household
-            ORDER BY household_size DESC
+            ORDER BY household_size DESC  
             LIMIT 10;
         `
     },
@@ -150,7 +150,7 @@ const reports = [
             { heading: "Total Given", field: "total_given" }
         ],
         sql: `
-            SELECT fi.item_name, SUM(di.quantity_given) AS total_given
+            SELECT fi.item_name, SUM(di.quantity_given) AS total_given                      //dev query 1
             FROM DistributionItem di
             JOIN FoodItem fi ON di.item_id = fi.item_id
             GROUP BY fi.item_name
@@ -172,7 +172,7 @@ const reports = [
             { heading: "Total Given", field: "total_given" }
         ],
         sql: `
-            SELECT fi.item_name, SUM(di.quantity_given) AS total_given
+            SELECT fi.item_name, SUM(di.quantity_given) AS total_given                      //dev query 2
             FROM DistributionItem di
             JOIN FoodItem fi ON di.item_id = fi.item_id
             GROUP BY fi.item_name
@@ -194,7 +194,7 @@ const reports = [
             { heading: "Total Given", field: "total_given" }
         ],
         sql: `
-            SELECT fi.category, SUM(di.quantity_given) AS total_given
+            SELECT fi.category, SUM(di.quantity_given) AS total_given                     //dev query 3
             FROM DistributionItem di
             JOIN FoodItem fi ON di.item_id = fi.item_id
             GROUP BY fi.category
@@ -216,7 +216,7 @@ const reports = [
             { heading: "Stock", field: "stock_total" }
         ],
         sql: `
-            SELECT fi.item_name, SUM(s.quantity_in_stock) AS stock_total
+            SELECT fi.item_name, SUM(s.quantity_in_stock) AS stock_total                                               // james query 1
             FROM Stock s
             JOIN FoodItem fi ON s.item_id = fi.item_id
             GROUP BY fi.item_name
@@ -238,7 +238,7 @@ const reports = [
             { heading: "Distribution Count", field: "times_helped" }
         ],
         sql: `
-            SELECT household_id, COUNT(*) AS times_helped
+            SELECT household_id, COUNT(*) AS times_helped                                              // james query 2
             FROM Distribution
             GROUP BY household_id
             ORDER BY times_helped DESC
@@ -259,7 +259,7 @@ const reports = [
             { heading: "Average Items", field: "avg_items" }
         ],
         sql: `
-            SELECT fb.foodbank_name, ROUND(AVG(di.quantity_given), 2) AS avg_items
+            SELECT fb.foodbank_name, ROUND(AVG(di.quantity_given), 2) AS avg_items                                              // james query 3
             FROM Distribution d
             JOIN DistributionItem di ON d.distribution_id = di.distribution_id
             JOIN FoodBank fb ON d.foodbank_id = fb.foodbank_id
