@@ -1,65 +1,33 @@
-// this will hold the chart object after chart.js makes it
-// we keep it here so we can destroy the old chart before drawing a new one
 let stockChart = null;
-
-// this keeps track of which report tab is selected right now
-// 0 means the first report in the reports array
 let activeReportIndex = 0;
 
-// this changes a database date into a normal uk date format like dd/mm/yyyy
-// if there is no date at all then it just says "Not set"
-const formatDate = (value) => {
-    if (!value) return "Not set";
-    return new Date(value).toLocaleDateString("en-GB");
-};
+// changes a date into normal uk format
+function formatDate(value) {
+    if (!value) {
+        return "Not set";
+    }
 
-// this is the full list of reports for the reports page
-// every object here is one button/tab and one sql report
-// each one stores:
-// - the tab name
-// - the big report title
-// - the table title
-// - the problem sentence
-// - chart settings
-// - table column settings
-// - and the sql query that gets the data
+    return new Date(value).toLocaleDateString("en-GB");
+}
+
 const reports = [
     {
-        // this is the small button text
         tab: "Low stock",
-
-        // this is the heading above the chart
         title: "Report Title: Food Banks with Low Stock",
-
-        // this is the heading above the table
         tableTitle: "Food banks with the least stock",
-
-        // this is the short explanation of why the report matters
         problem: "Problem: finding food banks that may run out of stock soon.",
-
-        // this is the chart legend label
         chartLabel: "Total Stock",
-
-        // this tells chart.js what chart type to draw
         chartType: "bar",
-
-        // this says which field from the sql result should be used as labels
         labelField: "foodbank_name",
-
-        // this says which field from the sql result should be used as the number values
         valueField: "total_stock",
-
-        // these are the table columns we want to print
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
             { heading: "Total Stock", field: "total_stock" }
-        ],
-
-        // this is the actual sql query for this report
-        sql: `
+        ], //kathan query 1
+        sql: ` 
             SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock
             FROM Stock s
-            JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id                            //kathan query 1
+            JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
             GROUP BY fb.foodbank_name
             ORDER BY total_stock ASC
             LIMIT 10;
@@ -77,9 +45,9 @@ const reports = [
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
             { heading: "Total Stock", field: "total_stock" }
-        ],
+        ], //kathan query 2
         sql: `
-            SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock                          //kathan query 2
+            SELECT fb.foodbank_name, SUM(s.quantity_in_stock) AS total_stock
             FROM Stock s
             JOIN FoodBank fb ON s.foodbank_id = fb.foodbank_id
             GROUP BY fb.foodbank_name
@@ -99,9 +67,9 @@ const reports = [
         columns: [
             { heading: "Donor", field: "donor_name" },
             { heading: "Items Donated", field: "total_donated" }
-        ],
+        ],//kathan query 3
         sql: `
-            SELECT d.donor_name, SUM(di.quantity) AS total_donated                           //kathan query 3
+            SELECT d.donor_name, SUM(di.quantity) AS total_donated
             FROM Donation d
             JOIN DonationItem di ON d.donation_id = di.donation_id
             GROUP BY d.donor_name
@@ -121,9 +89,9 @@ const reports = [
         columns: [
             { heading: "Donor", field: "donor_name" },
             { heading: "Donation Count", field: "donation_count" }
-        ],
+        ], // dan query 1 
         sql: `
-            SELECT donor_name, COUNT(*) AS donation_count                         // dan query 1
+            SELECT donor_name, COUNT(*) AS donation_count
             FROM Donation
             GROUP BY donor_name
             ORDER BY donation_count DESC
@@ -142,9 +110,9 @@ const reports = [
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
             { heading: "Households Served", field: "households_served" }
-        ],
+        ], // dan query 2 
         sql: `
-            SELECT fb.foodbank_name, COUNT(DISTINCT d.household_id) AS households_served     // dan query 2
+            SELECT fb.foodbank_name, COUNT(DISTINCT d.household_id) AS households_served
             FROM Distribution d
             JOIN FoodBank fb ON d.foodbank_id = fb.foodbank_id
             GROUP BY fb.foodbank_name
@@ -164,9 +132,9 @@ const reports = [
         columns: [
             { heading: "Household ID", field: "household_id" },
             { heading: "Household Size", field: "household_size" }
-        ],
+        ],// dan query 3  
         sql: `
-            SELECT household_id, household_size                                             //dan  query 3
+            SELECT household_id, household_size
             FROM Household
             ORDER BY household_size DESC
             LIMIT 10;
@@ -184,9 +152,9 @@ const reports = [
         columns: [
             { heading: "Item", field: "item_name" },
             { heading: "Total Given", field: "total_given" }
-        ],
+        ], // dev query 1 
         sql: `
-            SELECT fi.item_name, SUM(di.quantity_given) AS total_given                      //dev query 1
+            SELECT fi.item_name, SUM(di.quantity_given) AS total_given
             FROM DistributionItem di
             JOIN FoodItem fi ON di.item_id = fi.item_id
             GROUP BY fi.item_name
@@ -206,9 +174,9 @@ const reports = [
         columns: [
             { heading: "Item", field: "item_name" },
             { heading: "Total Given", field: "total_given" }
-        ],
+        ], // dev query 2
         sql: `
-            SELECT fi.item_name, SUM(di.quantity_given) AS total_given                      //dev query 2
+            SELECT fi.item_name, SUM(di.quantity_given) AS total_given
             FROM DistributionItem di
             JOIN FoodItem fi ON di.item_id = fi.item_id
             GROUP BY fi.item_name
@@ -228,9 +196,9 @@ const reports = [
         columns: [
             { heading: "Category", field: "category" },
             { heading: "Total Given", field: "total_given" }
-        ],
+        ], // dev query 3
         sql: `
-            SELECT fi.category, SUM(di.quantity_given) AS total_given                     //dev query 3
+            SELECT fi.category, SUM(di.quantity_given) AS total_given
             FROM DistributionItem di
             JOIN FoodItem fi ON di.item_id = fi.item_id
             GROUP BY fi.category
@@ -250,9 +218,9 @@ const reports = [
         columns: [
             { heading: "Item", field: "item_name" },
             { heading: "Stock", field: "stock_total" }
-        ],
+        ], // james query 1
         sql: `
-            SELECT fi.item_name, SUM(s.quantity_in_stock) AS stock_total                                               // james query 1
+            SELECT fi.item_name, SUM(s.quantity_in_stock) AS stock_total
             FROM Stock s
             JOIN FoodItem fi ON s.item_id = fi.item_id
             GROUP BY fi.item_name
@@ -272,9 +240,9 @@ const reports = [
         columns: [
             { heading: "Household ID", field: "household_id" },
             { heading: "Distribution Count", field: "times_helped" }
-        ],
+        ], // james query 2
         sql: `
-            SELECT household_id, COUNT(*) AS times_helped                                              // james query 2
+            SELECT household_id, COUNT(*) AS times_helped
             FROM Distribution
             GROUP BY household_id
             ORDER BY times_helped DESC
@@ -293,9 +261,9 @@ const reports = [
         columns: [
             { heading: "Food Bank", field: "foodbank_name" },
             { heading: "Average Items", field: "avg_items" }
-        ],
+        ], // james query 3
         sql: `
-            SELECT fb.foodbank_name, ROUND(AVG(di.quantity_given), 2) AS avg_items                                              // james query 3
+            SELECT fb.foodbank_name, ROUND(AVG(di.quantity_given), 2) AS avg_items
             FROM Distribution d
             JOIN DistributionItem di ON d.distribution_id = di.distribution_id
             JOIN FoodBank fb ON d.foodbank_id = fb.foodbank_id
@@ -306,8 +274,7 @@ const reports = [
     }
 ];
 
-// these are just the colours used if we ever use a pie chart
-// for bar charts we are mostly using one green colour instead
+// colours for charts
 const chartColors = [
     "#2ea66f",
     "#3e84d8",
@@ -320,63 +287,44 @@ const chartColors = [
     "#4f9a94"
 ];
 
-// this gets the value for one table cell
-// if the column says it is a date, it formats the date first
-// if the value is empty, null, or missing, it says "Not set"
-const formatCellValue = (row, column) => {
-    const value = row[column.field];
+// gets the value to print in the table
+function formatCellValue(row, column) {
+    var value = row[column.field];
 
     if (column.type === "date") {
         return formatDate(value);
     }
 
-    return value === null || value === undefined || value === "" ? "Not set" : value;
-};
-
-// this makes the chart on the page
-// it takes the current report settings and the rows from the sql result
-const drawChart = (report, rows) => {
-    // this gets the canvas from the html where chart.js will draw
-    const canvas = document.querySelector("#stockChart");
-
-    // if the canvas is missing or chart.js did not load, stop here
-    if (!canvas || typeof Chart === "undefined") {
-        return;
+    if (value === null || value === undefined || value === "") {
+        return "Not set";
     }
 
-    // labels are the x axis names
-    // values are the number amounts
-    const labels = [];
-    const values = [];
+    return value;
+}
 
-    // go through every row from the database
-    // pick out the label field and value field based on this report
-    for (let row of rows) {
-        labels.push(row[report.labelField]);
-        values.push(Number(row[report.valueField]));
+// draws the chart
+function drawChart(report, rows) {
+    var canvas = document.querySelector("#stockChart");
+    var labels = [];
+    var values = [];
+
+    for (var i = 0; i < rows.length; i++) {
+        labels.push(rows[i][report.labelField]);
+        values.push(Number(rows[i][report.valueField]));
     }
 
-    // if a chart already exists, remove it first
-    // this stops new charts from drawing on top of old ones
     if (stockChart) {
         stockChart.destroy();
     }
 
-    // now make a brand new chart
     stockChart = new Chart(canvas, {
         type: report.chartType,
         data: {
             labels: labels,
             datasets: [
                 {
-                    // this is the small label in the chart legend
                     label: report.chartLabel,
-
-                    // these are the number values from the sql result
                     data: values,
-
-                    // pie charts use lots of colours
-                    // bar charts just use one colour
                     backgroundColor: report.chartType === "pie" ? chartColors : "#2e5d50"
                 }
             ]
@@ -384,9 +332,6 @@ const drawChart = (report, rows) => {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-
-            // pie charts do not use normal y axis settings
-            // bar charts do, and we want them to start at 0
             scales: report.chartType === "pie" ? {} : {
                 y: {
                     beginAtZero: true
@@ -394,144 +339,106 @@ const drawChart = (report, rows) => {
             }
         }
     });
-};
+}
 
-// this prints the html table under the chart
-// it uses the columns list from the report object
-const printTable = (report, rows) => {
-    const output = document.querySelector("#reportTableOutput");
-    const table = document.createElement("table");
-    const thead = document.createElement("thead");
-    const headerRow = document.createElement("tr");
+// prints the table under the chart
+function printTable(report, rows) {
+    var output = document.querySelector("#reportTableOutput");
+    var html = "<table>";
+    html += "<thead><tr>";
 
-    // make the top header row of the table
-    for (let column of report.columns) {
-        const th = document.createElement("th");
-        th.textContent = column.heading;
-        headerRow.appendChild(th);
+    for (var i = 0; i < report.columns.length; i++) {
+        html += "<th>" + report.columns[i].heading + "</th>";
     }
 
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
+    html += "</tr></thead>";
+    html += "<tbody>";
 
-    const tbody = document.createElement("tbody");
+    for (var r = 0; r < rows.length; r++) {
+        html += "<tr>";
 
-    // now make the main table rows using the sql result data
-    for (let row of rows) {
-        const tr = document.createElement("tr");
-
-        for (let column of report.columns) {
-            const td = document.createElement("td");
-
-            // put the correct value in each cell
-            td.textContent = formatCellValue(row, column);
-            tr.appendChild(td);
+        for (var c = 0; c < report.columns.length; c++) {
+            html += "<td>" + formatCellValue(rows[r], report.columns[c]) + "</td>";
         }
 
-        tbody.appendChild(tr);
+        html += "</tr>";
     }
 
-    table.appendChild(tbody);
+    html += "</tbody></table>";
+    output.innerHTML = html;
+}
 
-    // clear out old content first
-    output.textContent = "";
-
-    // then add the new table
-    output.appendChild(table);
-};
-
-// this updates the text above the chart and table
-// every report has its own title and problem sentence
-const setReportText = (report) => {
+// changes the text above the chart and table
+function setReportText(report) {
     document.querySelector("#reportChartTitle").textContent = report.title;
     document.querySelector("#reportProblemText").textContent = report.problem;
     document.querySelector("#reportTableTitle").textContent = report.tableTitle;
-};
+}
 
-// this highlights the tab that is currently selected
-// it loops through every tab button and checks if its index matches activeReportIndex
-const setActiveTab = () => {
-    const buttons = document.querySelectorAll(".report-tab");
+// highlights the selected tab
+function setActiveTab() {
+    var buttons = document.querySelectorAll(".report-tab");
 
-    buttons.forEach((button, index) => {
-        button.classList.toggle("is-active", index === activeReportIndex);
-    });
-};
+    for (var i = 0; i < buttons.length; i++) {
+        if (i === activeReportIndex) {
+            buttons[i].classList.add("is-active");
+        } else {
+            buttons[i].classList.remove("is-active");
+        }
+    }
+}
 
-// this is the main function that runs the current report
-// it updates the headings, runs the sql, then makes the chart and table
-const runActiveReport = async () => {
-    const report = reports[activeReportIndex];
-    const output = document.querySelector("#reportTableOutput");
+// runs the current report
+async function runActiveReport() {
+    var report = reports[activeReportIndex];
+    var output = document.querySelector("#reportTableOutput");
+    var result;
 
-    // update the text on the page for this report
     setReportText(report);
-
-    // show loading while waiting for the database result
     output.textContent = "Loading report data...";
 
-    try {
-        // send the sql query to the database using runQuery from myJs.js
-        const result = await runQuery(report.sql);
+    result = await runQuery(report.sql);
 
-        // if something went wrong, show an error message
-        if (!result || result.success !== true) {
-            output.textContent = result && result.error ? result.error : "Report query failed.";
-            return;
-        }
-
-        // if the query worked but returned no rows, say that clearly
-        if (!Array.isArray(result.data) || result.data.length === 0) {
-            output.textContent = "No rows returned.";
-            return;
-        }
-
-        // if we got rows back, draw the chart and print the table
-        drawChart(report, result.data);
-        printTable(report, result.data);
-    } catch (error) {
-        // this catches fetch/js errors and shows them on screen
-        output.textContent = `Report could not load: ${error.message}`;
+    if (!result || !result.data || result.data.length === 0) {
+        output.textContent = "No rows returned.";
+        return;
     }
-};
 
-// this builds all the report buttons at the top of the page
-// instead of writing 12 buttons in html, we make them here from the reports array
-const buildReportTabs = () => {
-    const tabBox = document.querySelector("#reportTabs");
+    drawChart(report, result.data);
+    printTable(report, result.data);
+}
 
-    reports.forEach((report, index) => {
-        const button = document.createElement("button");
+// makes the report buttons
+function buildReportTabs() {
+    var tabBox = document.querySelector("#reportTabs");
+
+    for (var i = 0; i < reports.length; i++) {
+        var button = document.createElement("button");
         button.type = "button";
         button.className = "report-tab";
-        button.textContent = report.tab;
-
-        // when a tab is clicked, change the active report,
-        // update the green selected tab style,
-        // and run that report
-        button.addEventListener("click", () => {
-            activeReportIndex = index;
-            setActiveTab();
-            runActiveReport();
-        });
-
+        button.textContent = reports[i].tab;
+        button.setAttribute("onclick", "openReport(" + i + ")");
         tabBox.appendChild(button);
-    });
+    }
 
-    // make sure the first tab is marked active when the page starts
     setActiveTab();
-};
+}
 
-// this stops the form from doing a full page reload
-// and just runs the current report on the same page instead
-document.querySelector("#reportFilterForm").addEventListener("submit", (event) => {
+// this runs when a tab is clicked
+function openReport(index) {
+    activeReportIndex = index;
+    setActiveTab();
+    runActiveReport();
+}
+
+// stops the form from reloading the page
+document.querySelector("#reportFilterForm").addEventListener("submit", function(event) {
     event.preventDefault();
     runActiveReport();
 });
 
-// wait until the html has loaded first
-// then build the tabs and run the first report automatically
-document.addEventListener("DOMContentLoaded", () => {
+// load tabs and first report when page opens
+document.addEventListener("DOMContentLoaded", function() {
     buildReportTabs();
     runActiveReport();
 });
