@@ -1,17 +1,18 @@
 var editingHouseholdId = "";
 
+// this shows a message above the table/form
 function showMessage(message, cssClass) {
-    var output = document.querySelector("#householdMessage");
-    output.textContent = message;
-    output.className = "message-box " + cssClass;
+    document.querySelector("#householdMessage").textContent = message;
+    document.querySelector("#householdMessage").className = "message-box " + cssClass;
 }
 
+// this clears the message box
 function clearMessage() {
-    var output = document.querySelector("#householdMessage");
-    output.textContent = "";
-    output.className = "message-box";
+    document.querySelector("#householdMessage").textContent = "";
+    document.querySelector("#householdMessage").className = "message-box";
 }
 
+// this resets the form back to normal add mode
 function resetForm() {
     document.querySelector("#householdForm").reset();
     document.querySelector("#householdFormTitle").textContent = "Add a household";
@@ -20,13 +21,14 @@ function resetForm() {
     clearMessage();
 }
 
+// simple form check
 function validateForm() {
-    var householdSize = Number(document.querySelector("#householdSize").value);
+    var householdSize = document.querySelector("#householdSize").value;
     var postcode = document.querySelector("#postcode").value.trim();
     var referralSource = document.querySelector("#referralSource").value.trim();
 
-    if (postcode === "" || referralSource === "") {
-        return "Please complete all required fields.";
+    if (householdSize === "" || postcode === "" || referralSource === "") {
+        return "Please complete all fields.";
     }
 
     if (householdSize < 1 || householdSize > 20) {
@@ -36,97 +38,72 @@ function validateForm() {
     return "";
 }
 
+// this prints all households into the table area
 async function printHouseholds() {
-    var output = document.querySelector("#householdTable");
     var result = await runQuery("SELECT household_id, household_size, postcode, referral_source FROM Household ORDER BY household_id DESC;");
+    var output = document.querySelector("#householdTable");
 
-    if (!result || result.success !== true || !result.data || result.data.length === 0) {
+    if (!result || !result.data || result.data.length === 0) {
         output.textContent = "No households returned.";
         return;
     }
 
-    var rows = result.data;
-    var table = document.createElement("table");
-    var thead = document.createElement("thead");
-    var headerRow = document.createElement("tr");
-    var headings = ["Household ID", "Household Size", "Postcode", "Referral Source", "Actions"];
+    var html = "<table>";
+    html += "<thead>";
+    html += "<tr>";
+    html += "<th>Household ID</th>";
+    html += "<th>Household Size</th>";
+    html += "<th>Postcode</th>";
+    html += "<th>Referral Source</th>";
+    html += "<th>Actions</th>";
+    html += "</tr>";
+    html += "</thead>";
+    html += "<tbody>";
 
-    for (var i = 0; i < headings.length; i++) {
-        var th = document.createElement("th");
-        th.textContent = headings[i];
-        headerRow.appendChild(th);
+    for (var i = 0; i < result.data.length; i++) {
+        var row = result.data[i];
+
+        html += "<tr>";
+        html += "<td>" + row.household_id + "</td>";
+        html += "<td>" + row.household_size + "</td>";
+        html += "<td>" + row.postcode + "</td>";
+        html += "<td>" + row.referral_source + "</td>";
+        html += "<td>";
+        html += "<button type='button' class='main-button grey-button small-button' onclick=\"startEdit('" + row.household_id + "','" + row.household_size + "','" + row.postcode + "','" + row.referral_source + "')\">Edit</button> ";
+        html += "<button type='button' class='main-button red-button small-button' onclick='deleteHousehold(" + row.household_id + ")'>Delete</button>";
+        html += "</td>";
+        html += "</tr>";
     }
 
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
+    html += "</tbody>";
+    html += "</table>";
 
-    var tbody = document.createElement("tbody");
-
-    for (var r = 0; r < rows.length; r++) {
-        var tr = document.createElement("tr");
-        var td1 = document.createElement("td");
-        var td2 = document.createElement("td");
-        var td3 = document.createElement("td");
-        var td4 = document.createElement("td");
-        var td5 = document.createElement("td");
-        var editButton = document.createElement("button");
-        var deleteButton = document.createElement("button");
-
-        td1.textContent = rows[r].household_id;
-        td2.textContent = rows[r].household_size;
-        td3.textContent = rows[r].postcode;
-        td4.textContent = rows[r].referral_source;
-
-        editButton.type = "button";
-        editButton.className = "main-button grey-button small-button";
-        editButton.textContent = "Edit";
-        editButton.setAttribute("onclick", "startEdit(" + rows[r].household_id + "," + rows[r].household_size + ",'" + rows[r].postcode.replace(/'/g, "\\'") + "','" + rows[r].referral_source.replace(/'/g, "\\'") + "')");
-
-        deleteButton.type = "button";
-        deleteButton.className = "main-button red-button small-button";
-        deleteButton.textContent = "Delete";
-        deleteButton.setAttribute("onclick", "deleteHousehold(" + rows[r].household_id + ")");
-
-        td5.appendChild(editButton);
-        td5.appendChild(deleteButton);
-
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        tr.appendChild(td3);
-        tr.appendChild(td4);
-        tr.appendChild(td5);
-        tbody.appendChild(tr);
-    }
-
-    table.appendChild(tbody);
-    output.innerHTML = "";
-    output.appendChild(table);
+    output.innerHTML = html;
 }
 
+// this fills the form with one household so it can be edited
 function startEdit(id, size, postcode, referral) {
     editingHouseholdId = id;
-    document.querySelector("#householdFormTitle").textContent = "Edit household #" + id;
+    document.querySelector("#householdFormTitle").textContent = "Edit household";
     document.querySelector("#saveHouseholdBtn").textContent = "Update household";
     document.querySelector("#householdSize").value = size;
     document.querySelector("#postcode").value = postcode;
     document.querySelector("#referralSource").value = referral;
-    showMessage("Edit the values and save again.", "good-message");
+    showMessage("Now editing household " + id, "good-message");
 }
 
+// this saves either a new household or an edited one
 async function saveHousehold() {
-    var validationMessage = validateForm();
-    if (validationMessage !== "") {
-        showMessage(validationMessage, "bad-message");
+    var check = validateForm();
+
+    if (check !== "") {
+        showMessage(check, "bad-message");
         return;
     }
 
-    var saveButton = document.querySelector("#saveHouseholdBtn");
-    saveButton.disabled = true;
-    saveButton.textContent = "Saving...";
-
-    var householdSize = Number(document.querySelector("#householdSize").value);
-    var postcode = document.querySelector("#postcode").value.trim().toUpperCase().replace(/'/g, "''");
-    var referralSource = document.querySelector("#referralSource").value.trim().replace(/'/g, "''");
+    var householdSize = document.querySelector("#householdSize").value;
+    var postcode = document.querySelector("#postcode").value.trim();
+    var referralSource = document.querySelector("#referralSource").value.trim();
     var sql = "";
 
     if (editingHouseholdId === "") {
@@ -136,9 +113,6 @@ async function saveHousehold() {
     }
 
     var result = await runQuery(sql);
-
-    saveButton.disabled = false;
-    saveButton.textContent = "Save household";
 
     if (!result || result.success !== true) {
         showMessage("Could not save household.", "bad-message");
@@ -150,19 +124,23 @@ async function saveHousehold() {
     printHouseholds();
 }
 
+// this deletes one household
 async function deleteHousehold(id) {
-    if (!window.confirm("Delete this household?")) {
+    var yes = confirm("Delete this household?");
+
+    if (!yes) {
         return;
     }
 
-    var result = await runQuery("DELETE FROM Household WHERE household_id = " + id + ";");
+    var sql = "DELETE FROM Household WHERE household_id = " + id + ";";
+    var result = await runQuery(sql);
 
     if (!result || result.success !== true) {
         showMessage("Could not delete household.", "bad-message");
         return;
     }
 
-    if (String(editingHouseholdId) === String(id)) {
+    if (editingHouseholdId == id) {
         resetForm();
     }
 
@@ -170,11 +148,18 @@ async function deleteHousehold(id) {
     printHouseholds();
 }
 
-document.querySelector("#householdForm").addEventListener("submit", function (event) {
+// when the form is submitted, save the household
+document.querySelector("#householdForm").addEventListener("submit", function(event) {
     event.preventDefault();
     saveHousehold();
 });
 
-document.querySelector("#resetHouseholdBtn").addEventListener("click", resetForm);
+// reset button clears the form
+document.querySelector("#resetHouseholdBtn").addEventListener("click", function() {
+    resetForm();
+});
 
-document.addEventListener("DOMContentLoaded", printHouseholds);
+// load all households when page opens
+document.addEventListener("DOMContentLoaded", function() {
+    printHouseholds();
+});
