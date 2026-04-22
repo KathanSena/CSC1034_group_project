@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Management</title>
+    <link rel="icon" type="image/jpeg" href="custom-favicon.jpeg?v=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="households">
+    <!-- Shared site header and navigation. -->
+    <header class="main-header">
+        <div class="page-width header-inside">
+            <a class="logo-area" href="index.html">
+                <span class="logo-circle">FB</span>
+                <span>
+                    <strong>Group 18 Food Bank Project</strong>
+                    <small>SDG 2 Zero Hunger</small>
+                </span>
+            </a>
+
+            <nav class="header-nav" aria-label="Main navigation">
+                <a href="index.html">Dashboard</a>
+                <a href="stock.html">Stock</a>
+                <a href="households.html">Households</a>
+                <a href="reports.html">Reports</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-width data-display-main">
+        <!-- Page introduction explaining the CRUD purpose of this page. -->
+        <section class="main-header-text smaller-header-box">
+            <p class="small-top-text">CRUD page</p>
+            <h1>Household records</h1>
+            <p>
+                This page is where we show create, update, and delete features from the web
+                interface. It also includes validation, success and error messages, and a delete
+                confirmation box.
+            </p>
+        </section>
+
+        <!-- Household form for Create and Update actions. JavaScript switches the form between add/edit mode. -->
+        <section class="two-box-layout">
+            <section class="data-box">
+                <div class="data-box-top">
+                    <div>
+                        <p class="small-top-text">Form</p>
+                        <h2 id="householdFormTitle">Add a household</h2>
+                    </div>
+                </div>
+
+                <form id="householdForm" class="input-grid-main" novalidate>
+                    <div class="input-group">
+                        <label for="householdSize">Household size</label>
+                        <input id="householdSize" name="householdSize" type="number" min="1" max="20" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="postcode">Postcode</label>
+                        <input id="postcode" name="postcode" type="text" maxlength="20" required>
+                        <small>Enter a short postcode value such as BT1 5GS.</small>
+                    </div>
+
+                    <div class="input-group full-width-input">
+                        <label for="referralSource">Referral source</label>
+                        <input id="referralSource" name="referralSource" type="text" maxlength="100" required>
+                        <small>For example: Social Services, Charity Referral, NGO, or Self Referral.</small>
+                    </div>
+
+                    <div class="button-row full-button-row">
+                        <button id="saveHouseholdBtn" class="main-button green-button" type="submit">Save household</button>
+                        <button id="resetHouseholdBtn" class="main-button grey-button" type="button">Clear form</button>
+                    </div>
+
+                    <p id="householdMessage" class="message-box" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <!-- Visible validation rules to show how user input is constrained before SQL runs. -->
+            <section class="data-box">
+                <div class="data-box-top">
+                    <div>
+                        <p class="small-top-text">Data rules</p>
+                        <h2>Validation checks</h2>
+                    </div>
+                </div>
+
+                <ul class="simple-list">
+                    <li>Household size, postcode, and referral source must all be completed.</li>
+                    <li>Household size must be a number between 1 and 20.</li>
+                    <li>Postcode must be between 5 and 20 characters after trimming spaces.</li>
+                    <li>The submit button is disabled while a save is in progress.</li>
+                    <li>Delete actions show a confirmation dialogue before the SQL runs.</li>
+                </ul>
+            </section>
+        </section>
+
+        <!-- Current household records loaded from MySQL, with Edit and Delete buttons added by JavaScript. -->
+        <section class="data-box">
+            <div class="data-box-top">
+                <div>
+                    <p class="small-top-text">Current data</p>
+                    <h2>Existing households</h2>
+                </div>
+            </div>
+
+            <div id="householdTable" class="table-box">
+                <p class="loading-text">Loading households...</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Shared footer used across all pages. -->
+    <footer class="main-footer">
+        <div class="page-width main-footer-text">
+            <p>James, Kathan, Devadath, Dan</p>
+            <p>CSC1034 data driven systems group coursework</p>
+        </div>
+    </footer>
+
+    <!-- Scripts: shared navigation, database helper, and household CRUD logic. -->
+    <script src="script.js"></script>
+    <script src="js/myJs.js"></script>
+    <script src="js/households.js"></script>
+</body>
+</html>

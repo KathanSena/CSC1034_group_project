@@ -1,0 +1,512 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    color: #222222;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+.page-width {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.main-header {
+    background-color: white;
+    border-bottom: 1px solid #cccccc;
+}
+
+.header-inside {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 15px 0;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-circle {
+    width: 42px;
+    height: 42px;
+    background-color: #2f8a63;
+    color: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.logo-area strong {
+    display: block;
+    font-size: 18px;
+}
+
+.logo-area small {
+    display: block;
+    color: #666666;
+    font-size: 13px;
+}
+
+.header-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.header-nav a {
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+.header-nav a:hover,
+.header-nav a.is-active {
+    background-color: #e6efe9;
+    color: #1f7a56;
+}
+
+.data-display-main {
+    padding: 24px 0;
+}
+
+.main-header-text {
+    background-color: white;
+    border: 1px solid #cccccc;
+    padding: 25px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.smaller-header-box {
+    text-align: left;
+}
+
+.small-top-text {
+    color: #2f8a63;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.main-header-text h1 {
+    font-size: 34px;
+    margin-bottom: 12px;
+    color: #21365a;
+}
+
+.main-header-text p {
+    color: #555555;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.header-note {
+    font-size: 14px;
+}
+
+.dashboard-links-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.dashboard-link-card {
+    border: 1px solid #cccccc;
+    padding: 18px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 250px;
+}
+
+.green-card {
+    background-color: #f1faf3;
+}
+
+.orange-card {
+    background-color: #fff7ef;
+}
+
+.purple-card {
+    background-color: #f7f3fc;
+}
+
+.blue-card {
+    background-color: #f1f6fc;
+}
+
+.card-round-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.green-card .card-round-icon {
+    background-color: #2ea66f;
+}
+
+.orange-card .card-round-icon {
+    background-color: #ef9732;
+}
+
+.purple-card .card-round-icon {
+    background-color: #815ac8;
+}
+
+.blue-card .card-round-icon {
+    background-color: #3e84d8;
+}
+
+.card-round-icon img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: invert(1);
+}
+
+.dashboard-link-card h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #21365a;
+}
+
+.dashboard-link-card p {
+    color: #555555;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.main-button {
+    margin-top: auto;
+    display: inline-block;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.green-button {
+    background-color: #2ea66f;
+}
+
+.orange-button {
+    background-color: #ef9732;
+}
+
+.purple-button {
+    background-color: #815ac8;
+}
+
+.blue-button {
+    background-color: #3e84d8;
+}
+
+.grey-button {
+    background-color: #7b8794;
+}
+
+.red-button {
+    background-color: #d96b6b;
+}
+
+.data-box {
+    background-color: white;
+    border: 1px solid #cccccc;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.data-box-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.data-box-top h2 {
+    font-size: 26px;
+    color: #21365a;
+}
+
+.box-info-text,
+.loading-text,
+.message-box,
+.simple-list,
+.stats-card-box p,
+.main-footer p {
+    color: #555555;
+    line-height: 1.5;
+}
+
+.stats-card-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.small-stats-row {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.stats-card-box {
+    background-color: #f8f8f8;
+    border: 1px solid #d9d9d9;
+    padding: 16px;
+}
+
+.stats-card-name {
+    display: block;
+    font-weight: bold;
+    color: #666666;
+    margin-bottom: 8px;
+}
+
+.stats-card-box strong {
+    display: block;
+    font-size: 32px;
+    color: #21365a;
+    margin-bottom: 8px;
+}
+
+.data-box-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.two-box-layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: end;
+}
+
+.input-grid-main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-weight: bold;
+}
+
+.input-group small {
+    font-size: 13px;
+    color: #666666;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+    padding: 10px;
+    border: 1px solid #bbbbbb;
+    background-color: white;
+}
+
+.input-group textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.full-width-input,
+.full-button-row {
+    grid-column: 1 / -1;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.report-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.report-tab {
+    min-height: 58px;
+    padding: 10px 12px;
+    border: 1px solid #cccccc;
+    background-color: #f8f8f8;
+    color: #21365a;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: left;
+    border-radius: 4px;
+}
+
+.report-tab:hover,
+.report-tab.is-active {
+    background-color: #e6efe9;
+    border-color: #2f8a63;
+    color: #1f7a56;
+}
+
+.small-button {
+    padding: 7px 10px;
+    font-size: 14px;
+}
+
+.message-box {
+    min-height: 40px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    background-color: #f8f8f8;
+}
+
+.message-box.good-message {
+    background-color: #edf9f2;
+    border-color: #b7dec5;
+    color: #1c6b45;
+}
+
+.message-box.bad-message {
+    background-color: #fff0f0;
+    border-color: #f0b7b7;
+    color: #9a3b3b;
+}
+
+.simple-list {
+    padding-left: 18px;
+}
+
+.simple-list li {
+    margin-bottom: 10px;
+}
+
+.table-box {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #cccccc;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #eeeeee;
+}
+
+.low-row td {
+    background-color: #fff6d9;
+}
+
+.chart-box {
+    min-height: 380px;
+}
+
+.chart-area {
+    min-height: 300px;
+    position: relative;
+}
+
+.simple-text-link {
+    color: #1f7a56;
+    font-weight: bold;
+}
+
+.simple-text-link:hover {
+    text-decoration: underline;
+}
+
+.main-footer {
+    padding-bottom: 24px;
+}
+
+.main-footer-text {
+    border-top: 1px solid #cccccc;
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+@media (max-width: 900px) {
+    .dashboard-links-row,
+    .stats-card-row,
+    .small-stats-row,
+    .data-box-row,
+    .two-box-layout,
+    .report-tabs,
+    .filter-row,
+    .input-grid-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .header-inside,
+    .data-box-top,
+    .main-footer-text {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-nav {
+        width: 100%;
+    }
+
+    .main-header-text {
+        padding: 20px 16px;
+    }
+
+    .main-header-text h1 {
+        font-size: 28px;
+    }
+}
