@@ -31,7 +31,7 @@ var reports = [
                 foodbank_name,
                 total_stock
             FROM vw_foodbank_total_stock
-            WHERE total_stock IS NOT NULL
+            WHERE total_stock IS NOT NULL                                                                             // KATHAN QUERY 1
             ORDER BY total_stock ASC
             LIMIT 10;
         `
@@ -56,8 +56,8 @@ var reports = [
                 COUNT(DISTINCT s.item_id) AS item_types,
                 SUM(s.quantity_in_stock) AS total_stock
             FROM FoodBank fb
-            LEFT JOIN Stock s ON fb.foodbank_id = s.foodbank_id
-            GROUP BY fb.foodbank_id, fb.foodbank_name
+            LEFT JOIN Stock s ON fb.foodbank_id = s.foodbank_id                                                                              // KATHAN QUERY 2
+            GROUP BY fb.foodbank_id, fb.foodbank_name 
             HAVING item_types > 0
             ORDER BY item_types DESC, total_stock DESC
             LIMIT 10;
@@ -81,7 +81,7 @@ var reports = [
                 d.donor_name,
                 SUM(di.quantity) AS total_donated
             FROM Donation d
-            INNER JOIN DonationItem di ON d.donation_id = di.donation_id
+            INNER JOIN DonationItem di ON d.donation_id = di.donation_id                                                                             // KATHAN QUERY 3
             GROUP BY d.donor_name
             ORDER BY total_donated DESC
             LIMIT 10;
@@ -105,7 +105,7 @@ var reports = [
                 donor_name,
                 donation_count
             FROM vw_donor_activity
-            ORDER BY donation_count DESC
+            ORDER BY donation_count DESC                                                                                                                         // DAN QUERY 1
             LIMIT 10;
         `
     },
@@ -127,7 +127,7 @@ var reports = [
                 fb.foodbank_name,
                 COUNT(DISTINCT d.household_id) AS households_served
             FROM FoodBank fb
-            LEFT JOIN Distribution d ON fb.foodbank_id = d.foodbank_id
+            LEFT JOIN Distribution d ON fb.foodbank_id = d.foodbank_id                                                                                                                        // DAN QUERY 2
             GROUP BY fb.foodbank_id, fb.foodbank_name
             ORDER BY households_served DESC
             LIMIT 10;
@@ -151,7 +151,7 @@ var reports = [
                 h.household_id,
                 h.household_size
             FROM Household h
-            LEFT JOIN Distribution d ON h.household_id = d.household_id
+            LEFT JOIN Distribution d ON h.household_id = d.household_id                                                                                                                        // DAN QUERY 3
             GROUP BY h.household_id, h.household_size
             ORDER BY h.household_size DESC
             LIMIT 10;
@@ -174,7 +174,7 @@ var reports = [
             SELECT 
                 item_name,
                 total_given
-            FROM vw_item_distribution_totals
+            FROM vw_item_distribution_totals                                                                                                                                      // DEV QUERY 1
             ORDER BY total_given DESC
             LIMIT 10;
         `
@@ -197,7 +197,7 @@ var reports = [
                 fi.item_name,
                 SUM(di.quantity_given) AS total_given
             FROM FoodItem fi
-            INNER JOIN DistributionItem di ON fi.item_id = di.item_id
+            INNER JOIN DistributionItem di ON fi.item_id = di.item_id                                                                                                                                      // DEV QUERY 2
             GROUP BY fi.item_id, fi.item_name
             ORDER BY total_given ASC
             LIMIT 10;
@@ -221,7 +221,7 @@ var reports = [
                 fi.category,
                 SUM(di.quantity_given) AS total_given
             FROM FoodItem fi
-            INNER JOIN DistributionItem di ON fi.item_id = di.item_id
+            INNER JOIN DistributionItem di ON fi.item_id = di.item_id                                                                                                                                      // DEV QUERY 3
             GROUP BY fi.category
             ORDER BY total_given DESC
             LIMIT 10;
@@ -245,7 +245,7 @@ var reports = [
                 item_name,
                 stock_total
             FROM vw_item_stock_totals
-            WHERE stock_total IS NOT NULL
+            WHERE stock_total IS NOT NULL                                                                                                                                      // jAMES QUERY 1
             ORDER BY stock_total DESC
             LIMIT 10;
         `
@@ -268,7 +268,7 @@ var reports = [
                 h.household_id,
                 COUNT(d.distribution_id) AS times_helped
             FROM Household h
-            LEFT JOIN Distribution d ON h.household_id = d.household_id
+            LEFT JOIN Distribution d ON h.household_id = d.household_id                                                                                                                                      // JAMES QUERY 2
             GROUP BY h.household_id
             ORDER BY times_helped DESC
             LIMIT 10;
@@ -293,7 +293,7 @@ var reports = [
                 ROUND(AVG(di.quantity_given), 2) AS avg_items
             FROM FoodBank fb
             INNER JOIN Distribution d ON fb.foodbank_id = d.foodbank_id
-            INNER JOIN DistributionItem di ON d.distribution_id = di.distribution_id
+            INNER JOIN DistributionItem di ON d.distribution_id = di.distribution_id                                                                                                                                      // JAMES QUERY 3
             GROUP BY fb.foodbank_id, fb.foodbank_name
             ORDER BY avg_items DESC
             LIMIT 10;
